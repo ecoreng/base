@@ -1,0 +1,26 @@
+{
+    "name": "basephp/base",
+    "description": "mini fw",
+    "require": {
+        "phroute/phroute": "1.4.*",
+        "filp/whoops": "~1.0",
+        "aura/web": "~2.0",
+        "league/plates": "~3.1",
+				"aura/session": "2.0.0-beta2",
+				"rdlowrey/auryn":"~0.14"
+    },
+		"autoload": {
+			"psr-4": {
+				"Base\\": "vendor/base/src/"
+			}
+		},
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Elias Coronado",
+            "email": "me@ecor.me"
+        }
+    ],
+    "minimum-stability": "dev"
+}
+
