@@ -2,7 +2,7 @@
 
 namespace Base;
 
-class AuraRequestProxy implements \Base\Interfaces\RequestInterface
+class AuraRequestContractor implements \Base\Interfaces\RequestInterface
 {
 
     protected $request;

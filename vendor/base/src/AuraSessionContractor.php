@@ -2,7 +2,7 @@
 
 namespace Base;
 
-class AuraSessionProxy implements \Base\Interfaces\SessionInterface
+class AuraSessionContractor implements \Base\Interfaces\SessionInterface
 {
 
     protected $activeSegment = null;

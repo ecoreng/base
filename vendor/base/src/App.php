@@ -13,9 +13,18 @@ class App
     protected $config;
     protected $messageFactory;
     protected $responseSender;
+    protected $request;
 
     public function __construct(
-    \Base\Interfaces\RouterInterface $router, \Base\Interfaces\DispatcherInterface $dispatcher, \Base\Interfaces\ConfigInterface $environment, \Composer\Autoload\ClassLoader $autoloader, \Base\Interfaces\SessionInterface $session, \Base\Interfaces\ConfigInterface $config, \Base\Interfaces\ViewInterface $view, \Base\Interfaces\ServerSideMessageFactoryInterface $messageFactory, \Base\Interfaces\ResponseSenderInterface $responseSender
+        \Base\Interfaces\RouterInterface $router,
+        \Base\Interfaces\DispatcherInterface $dispatcher,
+        \Base\Interfaces\ConfigInterface $environment,
+        \Composer\Autoload\ClassLoader $autoloader,
+        \Base\Interfaces\SessionInterface $session,
+        \Base\Interfaces\ConfigInterface $config,
+        \Base\Interfaces\ViewInterface $view,
+        \Base\Interfaces\ServerSideMessageFactoryInterface $messageFactory,
+        \Base\Interfaces\ResponseSenderInterface $responseSender
     )
     {
         $this->router = $router;
@@ -27,6 +36,7 @@ class App
         $this->view = $view;
         $this->messageFactory = $messageFactory;
         $this->responseSender = $responseSender;
+        $this->request = $this->messageFactory->newIncomingRequest();
     }
 
     /**
@@ -48,8 +58,7 @@ class App
      */
     public function dispatch()
     {
-        // 'GET', 'a'
-        $response = $this->dispatcher->dispatch($this->messageFactory->newIncomingRequest());
+        $response = $this->dispatcher->dispatch($this->request);
         // Pampering our users (?)
         if (is_string($response)) {
             $responseObject = $this->messageFactory->newOutgoingResponse();

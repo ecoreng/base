@@ -2,7 +2,7 @@
 
 namespace Base;
 
-class PhrouteRouterProxy extends \Phroute\RouteCollector implements \Base\Interfaces\RouterInterface
+class PhrouteRouterContractor extends \Phroute\RouteCollector implements \Base\Interfaces\RouterInterface
 {
     public function addRoute()
     {

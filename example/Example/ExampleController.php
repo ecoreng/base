@@ -7,11 +7,12 @@ class ExampleController implements \Base\Interfaces\ControllerInterface
 
     use \Base\ControllerTrait;
     
-    protected $session;
+    protected $request;
 
-    public function __construct(\Base\Interfaces\SessionInterface $session)
+    public function __construct(\Base\Interfaces\RequestInterface $request)
     {
-        $this->session = $session;
+        $this->request = $request;
+        var_dump($request);
     }
 
     public function getDemo()

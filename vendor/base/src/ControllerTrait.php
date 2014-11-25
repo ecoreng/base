@@ -7,6 +7,7 @@ trait ControllerTrait
 
     protected $view;
     protected $response;
+    protected $request;
     
     public function setView(\Base\Interfaces\ViewInterface $view)
     {

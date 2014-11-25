@@ -2,7 +2,7 @@
 
 namespace Base;
 
-class AuraResponseProxy implements \Base\Interfaces\ResponseInterface
+class AuraResponseContractor implements \Base\Interfaces\ResponseInterface
 {
 
     protected $response;

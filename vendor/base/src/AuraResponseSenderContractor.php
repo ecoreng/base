@@ -2,13 +2,13 @@
 
 namespace Base;
 
-class AuraResponseSender implements \Base\Interfaces\ResponseSenderInterface
+class AuraResponseSenderContractor implements \Base\Interfaces\ResponseSenderInterface
 {
     
     protected $response;
     protected $sender;
     
-    public function setResponse(\Base\AuraResponseProxy $response)
+    public function setResponse(\Base\Interfaces\ResponseInterface $response)
     {
         $this->response = $response;
         $this->sender = new \Aura\Web\ResponseSender($response->getInstance());

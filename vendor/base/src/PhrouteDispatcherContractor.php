@@ -2,7 +2,7 @@
 
 namespace Base;
 
-class PhrouteDispatcherProxy implements \Base\Interfaces\DispatcherInterface
+class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterface
 {
 
     protected $router;
