@@ -7,10 +7,15 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
 
     protected $router;
     protected $resolver;
+    protected $baseUrl = '';
 
-    public function __construct(\Base\Interfaces\RouterInterface $router, \Phroute\HandlerResolverInterface $resolver)
+    public function __construct(\Base\Interfaces\RouterInterface $router)
     {
         $this->router = $router;
+    }
+
+    public function setResolver(\Phroute\HandlerResolverInterface $resolver)
+    {
         $this->resolver = $resolver;
     }
 
@@ -19,25 +24,33 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
         $this->dispatcher = new \Phroute\Dispatcher($this->router, $this->resolver);
     }
 
+    public function setBaseUrl($baseUrl = '')
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
     public function dispatch(\Base\Interfaces\RequestInterface $request)
     {
         $this->initDispatcher();
-
-        // bad
-        $remove = explode("/", $_SERVER['SCRIPT_NAME']);
-        array_pop($remove);
-        $remove = implode("/", $remove);
-        $url = str_replace([$_SERVER['SERVER_NAME'], ':' . $_SERVER['SERVER_PORT'], $remove, $_SERVER['REQUEST_SCHEME'] . '://'], ['', '', '', ''], $request->getUrl());
-        
-        ob_start();
-        $response = $this->dispatcher->dispatch($request->getMethod(), $url);
-        $body = ob_get_clean();
-        ob_end_clean();
-        
-        if ($response instanceof \Base\Interfaces\ResponseInterface) {
+        $url = parse_url($request->getUrl(), PHP_URL_PATH);
+        if ($this->baseUrl !== '') {
+            if (stripos($url, $this->baseUrl) === 0) {
+                $url = str_replace($this->baseUrl, '', $url);
+            }
+        }
+        try {
+            ob_start();
+            $response = $this->dispatcher->dispatch($request->getMethod(), $url);
+            $bufferedBody = ob_get_clean();
+            ob_end_clean();
+        } catch (\Exception $e) {
+            // ... setup better error reporting
+            die($e->getMessage());
+        }
+        if ($response instanceof \Base\Interfaces\ResponseInterface || $bufferedBody === '') {
             return $response;
         } else {
-            return $body;
+            return $bufferedBody;
         }
     }
 

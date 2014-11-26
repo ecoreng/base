@@ -28,6 +28,12 @@ class PhrouteResolver implements \Phroute\HandlerResolverInterface
         if (is_array($handler) and is_string($handler[0])) {
             $handler[0] = $this->di->make($handler[0]);
         }
+        if ($handler instanceof \Closure) {
+            $di = $this->di;
+            $handler = function () use ($di, $handler) {
+                return $di->execute($handler);
+            };
+        }
         return $handler;
     }
 }

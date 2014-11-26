@@ -8,7 +8,7 @@ trait ControllerTrait
     protected $view;
     protected $response;
     protected $request;
-    
+
     public function setView(\Base\Interfaces\ViewInterface $view)
     {
         $this->view = $view;
@@ -17,6 +17,11 @@ trait ControllerTrait
     public function setResponse(\Base\Interfaces\ResponseInterface $response)
     {
         $this->response = $response;
+    }
+
+    public function setRequest(\Base\Interfaces\RequestInterface $request)
+    {
+        $this->request = $request;
     }
 
     protected function render($template, $data = [], $status = 200, $contentType = 'text/html; charset=utf-8')
@@ -59,7 +64,7 @@ trait ControllerTrait
 
     protected function notFound($body = '', $status = 404, $contentType = 'text/html; charset=utf-8')
     {
-       return $this->response($body, $status, $contentType);
+        return $this->response($body, $status, $contentType);
     }
 
     protected function redirect($url, $status = 301)
@@ -70,4 +75,5 @@ trait ControllerTrait
         $response->setHeader('Location', $url);
         return $response;
     }
+
 }

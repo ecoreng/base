@@ -9,10 +9,9 @@ class ExampleController implements \Base\Interfaces\ControllerInterface
     
     protected $request;
 
-    public function __construct(\Base\Interfaces\RequestInterface $request)
+    public function __construct()
     {
-        $this->request = $request;
-        var_dump($request);
+        
     }
 
     public function getDemo()
