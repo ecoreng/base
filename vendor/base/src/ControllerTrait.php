@@ -26,8 +26,8 @@ trait ControllerTrait
 
     protected function render($template, $data = [], $status = 200, $contentType = 'text/html; charset=utf-8')
     {
-        // NOT READY
         $view = $this->getView();
+        return $this->response($view->render($template, $data), $status, $contentType);
     }
 
     protected function getView()
@@ -46,7 +46,7 @@ trait ControllerTrait
 
     protected function viewReady()
     {
-        return $this->getView() instanceof \Base\Interfaces\ViewInterface;
+        return $this->getViewObject() instanceof \Base\Interfaces\ViewInterface;
     }
 
     protected function response($body = '', $status = 200, $contentType = 'text/html; charset=utf-8')

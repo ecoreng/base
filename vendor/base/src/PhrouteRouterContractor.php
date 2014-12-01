@@ -9,4 +9,14 @@ class PhrouteRouterContractor extends \Phroute\RouteCollector implements \Base\I
         $args = func_get_args();
         return call_user_func_array('parent::addRoute', $args);
     }
+    
+    public function getRoute($name, $params = [])
+    {
+        return parent::route($name, $params);
+    }
+    
+    public function __call($name, $args)
+    {
+        return call_user_func_array('parent::addRoute', $args);
+    }
 }

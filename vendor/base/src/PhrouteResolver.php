@@ -20,20 +20,24 @@ class PhrouteResolver implements \Phroute\HandlerResolverInterface
      */
     public function resolve($handler)
     {
-        if (is_string($handler)){
-            if (strpos($handler, ':') !== false){
+
+        if (is_string($handler)) {
+            if (strpos($handler, ':') !== false) {
                 $handler = explode(':', $handler);
             }
         }
+
         if (is_array($handler) and is_string($handler[0])) {
             $handler[0] = $this->di->make($handler[0]);
         }
+
         if ($handler instanceof \Closure) {
             $di = $this->di;
             $handler = function () use ($di, $handler) {
                 $args = func_get_args();
-                $params = (new \ReflectionFunction($handler))->getParameters();
                 
+                $params = (new \ReflectionFunction($handler))->getParameters();
+
                 $urlArgs = array_intersect_key($params, $args);
                 $urlArgsReady = [];
                 foreach ($urlArgs as $key => $arg) {
@@ -44,4 +48,5 @@ class PhrouteResolver implements \Phroute\HandlerResolverInterface
         }
         return $handler;
     }
+
 }

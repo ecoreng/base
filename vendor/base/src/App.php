@@ -5,46 +5,49 @@ namespace Base;
 use \Base\Interfaces\RouterInterface as Router;
 use \Base\Interfaces\DispatcherInterface as Dispatcher;
 use \Base\Interfaces\AutoloaderInterface as Autoloader;
-use \Base\Interfaces\SessionInterface as Session;
-use \Base\Interfaces\ViewInterface as View;
 use \Base\Interfaces\ServerSideMessageFactoryInterface as MessageFactory;
 use \Base\Interfaces\ResponseSenderInterface as ResponseSender;
 use \Base\Interfaces\AppInterface as AppInterface;
 use \Psr\Http\Message\IncomingRequestInterface as Request;
+use \Auryn\Injector;
+use \Base\Interfaces\MiddlewareInterface as Middleware;
+use \Base\Interfaces\MiddlewareCallableInterface as MiddlewareCallable;
 
-class App implements AppInterface
+class App implements AppInterface, MiddlewareCallable
 {
 
     protected $router;
     protected $dispatcher;
     protected $autoloader;
-    protected $session;
     protected $config = [
-        'environment' => [
-            'base-url' => ''
-        ],
-        'app' => [
-            'mode' => 'dev'
-        ]
+        'environment.base-url' => '',
+        'app.mode' => 'dev',
     ];
     protected $messageFactory;
     protected $responseSender;
     protected $request;
+    protected $di;
+    protected $middleware = [];
 
     public function __construct(
-    Router $router, Dispatcher $dispatcher, Autoloader $autoloader, Session $session, $config, View $view,
-            MessageFactory $messageFactory, ResponseSender $responseSender, Request $request
+        Router $router,
+        Dispatcher $dispatcher,
+        Autoloader $autoloader,
+        $config = [],
+        MessageFactory $messageFactory,
+        ResponseSender $responseSender,
+        Request $request,
+        Injector $di
     )
     {
         $this->router = $router;
         $this->dispatcher = $dispatcher;
-        $this->autoloader = $autoloader;                                    // not used yet      [should it?]
-        $this->session = $session;                                          // not used yet      [should it?]
-        $this->config = array_replace_recursive($this->config, $config);    // not used here yet
-        $this->view = $view;                                                // not used here yet [and it shouldnt]
+        $this->autoloader = $autoloader;
+        $this->config = array_replace_recursive($this->config, $config);
         $this->messageFactory = $messageFactory;
         $this->responseSender = $responseSender;
         $this->request = $request;
+        $this->di = $di;
     }
 
     /**
@@ -61,6 +64,11 @@ class App implements AppInterface
         return call_user_func_array([$this->router, 'addRoute'], $args);
     }
 
+    public function getRoute($name, $params = [])
+    {
+        return $this->getRouter()->route($name, $params);
+    }
+
     /**
      * Dispatcher
      */
@@ -69,7 +77,7 @@ class App implements AppInterface
         if ($request === null) {
             $request = $this->request;
         }
-        $this->dispatcher->setBaseUrl($this->config['environment']['base-url']);
+        $this->dispatcher->setBaseUrl($this->getConfig('environment.base-url'));
         $response = $this->dispatcher->dispatch($request);
         // for anonymous functions returning text is easier
         if (is_string($response)) {
@@ -91,9 +99,19 @@ class App implements AppInterface
      */
     public function run()
     {
+        $lastMiddleware = reset($this->middleware);
+        $lastMiddleware->setNextMiddleware($this);
+        $firstMiddleware = end($this->middleware);
+        $firstMiddleware->call();
+    }
+
+    // .. after all middleware
+    public function call()
+    {
         $response = $this->dispatch();
     }
 
+    // .. subrequest challenge.. useful?
     public function subRequest($url, array $subEnvironment = [])
     {
         $environment = [
@@ -111,26 +129,39 @@ class App implements AppInterface
         return $response;
     }
 
-    public function setConfig($domain = 'app', $key, $value)
+    /**
+     * App Config
+     */
+    public function setConfig($key, $value)
     {
-        if (!array_key_exists($domain, $this->config)) {
-            $this->config[$domain] = [];
-        }
-        $this->config[$domain][$key] = $value;
+        $this->config[$key] = $value;
     }
 
-    public function getConfig($domain, $key = null)
+    public function getConfig($key = null)
     {
-        if ($key === null) {
-            if (array_key_exists($domain, $this->config)) {
-                return $this->config[$domain];
-            }
-        } else {
-            if (array_key_exists($key, $this->config[$domain])) {
-                return $this->config[$domain][$key];
-            }
+        if (array_key_exists($key, $this->config)) {
+            return $this->config[$key];
         }
         return null;
+    }
+
+    public function setConfigArray(array $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * Middleware
+     */
+    public function add(Middleware $middleware)
+    {
+        
+        $middleware->setApplication($this);
+        $middleware->setInjector($this->di);
+        if (count($this->middleware) > 0) {
+            $middleware->setNextMiddleware(end($this->middleware));
+        }
+        $this->middleware[] = $middleware;
     }
 
 }

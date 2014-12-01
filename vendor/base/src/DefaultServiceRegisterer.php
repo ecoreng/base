@@ -9,7 +9,7 @@ class DefaultServiceRegisterer implements \Base\Interfaces\ServiceRegistererInte
     protected $config;
     protected $autoloader;
 
-    public function __construct($config, \Composer\Autoload\ClassLoader $autoloader)
+    public function __construct(\Composer\Autoload\ClassLoader $autoloader, $config = [])
     {
         $this->config = $config;
         $this->autoloader = $autoloader;
@@ -32,10 +32,11 @@ class DefaultServiceRegisterer implements \Base\Interfaces\ServiceRegistererInte
         $this->di->alias('\Base\Interfaces\ServerSideMessageFactoryInterface', '\Base\AuraMessageFactoryContractor');
         $this->di->alias('\Psr\Http\Message\IncomingRequestInterface', '\Base\AuraRequestContractor');
         $this->di->alias('\Base\Interfaces\ResponseSenderInterface', '\Base\AuraResponseSenderContractor');
-        $this->di->alias('\Base\Interfaces\ViewInterface', '\Base\PlatesView');
+        $this->di->alias('\Base\Interfaces\ViewInterface', '\Base\GenericJsonView');
         $this->di->alias('\Base\Interfaces\AutoloaderInterface', '\Base\ComposerAutoloaderContractor');
         $this->di->alias('\Base\Interfaces\AppInterface', '\Base\App');
-        
+        $this->di->alias('\Auryn\Injector', '\Auryn\Provider');
+
         // Custom concrete implementation interfaces
         $this->di->alias('\Phroute\HandlerResolverInterface', '\Base\PhrouteResolver');
     }
@@ -51,7 +52,10 @@ class DefaultServiceRegisterer implements \Base\Interfaces\ServiceRegistererInte
         $this->di->share('\Base\AuraRequestContractor');
         $this->di->share('\Aura\Session\Session');
         $this->di->share('\Base\ComposerAutoloaderContractor');
-        $this->di->share('\Base\PlatesView');
+        $this->di->share('\Auryn\Provider');
+
+        //$this->di->share('\Base\PlatesView');
+        $this->di->share('\Base\GenericJsonView');
     }
 
     protected function setImplementations()
@@ -87,6 +91,11 @@ class DefaultServiceRegisterer implements \Base\Interfaces\ServiceRegistererInte
 
         // - Autoloader concretion that implements the AutoloaderInterface
         $di->define('\Base\ComposerAutoloaderContractor', [':autoloader' => $this->autoloader]);
+
+        // - Dependency Injection
+        $di->delegate('\Auryn\Injector', function () use ($di) {
+            return $di;
+        });
 
         // - Framework default app
         $di->define('\Base\App', [
