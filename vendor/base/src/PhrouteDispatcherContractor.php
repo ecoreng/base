@@ -29,7 +29,7 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
         $this->baseUrl = $baseUrl;
     }
 
-    public function dispatch(\Base\Interfaces\RequestInterface $request)
+    public function dispatch(\Psr\Http\Message\IncomingRequestInterface $request)
     {
         $this->initDispatcher();
         $url = parse_url($request->getUrl(), PHP_URL_PATH);
@@ -38,15 +38,11 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
                 $url = str_replace($this->baseUrl, '', $url);
             }
         }
-        try {
-            ob_start();
-            $response = $this->dispatcher->dispatch($request->getMethod(), $url);
-            $bufferedBody = ob_get_clean();
-            ob_end_clean();
-        } catch (\Exception $e) {
-            // ... setup better error reporting
-            die($e->getMessage());
-        }
+        ob_start();
+        $response = $this->dispatcher->dispatch($request->getMethod(), $url);
+        $bufferedBody = ob_get_clean();
+        ob_end_clean();
+
         if ($response instanceof \Base\Interfaces\ResponseInterface || $bufferedBody === '') {
             return $response;
         } else {

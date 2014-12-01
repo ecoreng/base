@@ -2,7 +2,7 @@
 
 namespace Base;
 
-class AuraRequestContractor implements \Base\Interfaces\RequestInterface
+class AuraRequestContractor implements \Psr\Http\Message\IncomingRequestInterface
 {
 
     protected $request;
@@ -82,7 +82,7 @@ class AuraRequestContractor implements \Base\Interfaces\RequestInterface
      */
     public function getQueryParams()
     {
-        return $this->query->get(PHP_URL_QUERY);
+        return $this->request->query->get(PHP_URL_QUERY);
     }
 
     /**
@@ -130,7 +130,7 @@ class AuraRequestContractor implements \Base\Interfaces\RequestInterface
      */
     public function getAttributes()
     {
-        return $this->attributes;
+        return $this->request->attributes;
     }
 
     /**
@@ -147,8 +147,8 @@ class AuraRequestContractor implements \Base\Interfaces\RequestInterface
      */
     public function getAttribute($attribute, $default = null)
     {
-        if (array_key_exists($attribute, $this->attributes)) {
-            return $this->attributes[$attribute];
+        if (array_key_exists($attribute, $this->request->attributes)) {
+            return $this->request->attributes[$attribute];
         } else {
             return $default;
         }
@@ -166,7 +166,7 @@ class AuraRequestContractor implements \Base\Interfaces\RequestInterface
      */
     public function setAttributes(array $attributes)
     {
-        $this->attributes = $attributes;
+        $this->request->attributes = $attributes;
     }
 
     /**
@@ -182,13 +182,128 @@ class AuraRequestContractor implements \Base\Interfaces\RequestInterface
      */
     public function setAttribute($attribute, $value)
     {
-        $this->attributes[$attribute] = $value;
+        $this->request->attributes[$attribute] = $value;
     }
 
-    // delegate all other calls to instance
+    /**
+     * Gets the HTTP protocol version as a string.
+     *
+     * The string MUST contain only the HTTP version number (e.g., "1.1", "1.0").
+     *
+     * @return string HTTP protocol version.
+     */
+    public function getProtocolVersion()
+    {
+        $protocol = $this->request->server['SERVER_PROTOCOL'];
+        $protocol = explode('/', $protocol);
+        return end($protocol);
+    }
+
+    /**
+     * Gets the body of the message.
+     *
+     * @return StreamableInterface|null Returns the body, or null if not set.
+     */
+    public function getBody()
+    {
+        return $this->request->content->getRaw();
+    }
+
+    /**
+     * Gets all message headers.
+     *
+     * The keys represent the header name as it will be sent over the wire, and
+     * each value is an array of strings associated with the header.
+     *
+     *     // Represent the headers as a string
+     *     foreach ($message->getHeaders() as $name => $values) {
+     *         echo $name . ": " . implode(", ", $values);
+     *     }
+     *
+     *     // Emit headers iteratively:
+     *     foreach ($message->getHeaders() as $name => $values) {
+     *         foreach ($values as $value) {
+     *             header(sprintf('%s: %s', $name, $value), false);
+     *         }
+     *     }
+     *
+     * @return array Returns an associative array of the message's headers. Each
+     *     key MUST be a header name, and each value MUST be an array of strings.
+     */
+    public function getHeaders()
+    {
+        return $this->request->headers->get();
+    }
+
+    /**
+     * Checks if a header exists by the given case-insensitive name.
+     *
+     * @param string $header Case-insensitive header name.
+     * @return bool Returns true if any header names match the given header
+     *     name using a case-insensitive string comparison. Returns false if
+     *     no matching header name is found in the message.
+     */
+    public function hasHeader($header)
+    {
+        $header = $this->request->headers->get($header, null);
+        return $header !== null;
+    }
+
+    /**
+     * Retrieve a header by the given case-insensitive name, as a string.
+     *
+     * This method returns all of the header values of the given
+     * case-insensitive header name as a string concatenated together using
+     * a comma.
+     *
+     * NOTE: Not all header values may be appropriately represented using
+     * comma concatenation.
+     *
+     * @param string $header Case-insensitive header name.
+     * @return string
+     */
+    public function getHeader($header)
+    {
+        return $this->request->headers->get($header);
+    }
+
+    /**
+     * Retrieves a header by the given case-insensitive name as an array of strings.
+     *
+     * @param string $header Case-insensitive header name.
+     * @return string[]
+     */
+    public function getHeaderAsArray($header)
+    {
+        $headerValues = $this->request->headers->get($header, null);
+        if (!is_array($headerValues)) {
+            $headerValues = [$headerValues];
+        }
+        return $headerValues;
+    }
+
+    /**
+     * Delegate all other calls to request instance
+     * 
+     */
     public function __call($name, $args)
     {
         return call_user_func_array([$this->request, $name], $args);
+    }
+
+    public function __get($attr)
+    {
+        return $this->request->$attr;
+    }
+    
+    public function __set($name, $value)
+    {
+        return $this->request->{$name} = $value;
+    }
+
+    public function getInstance()
+    {
+        return $this->request;
     }
 
 }

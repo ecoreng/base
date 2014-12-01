@@ -8,7 +8,7 @@ class AuraResponseSenderContractor implements \Base\Interfaces\ResponseSenderInt
     protected $response;
     protected $sender;
     
-    public function setResponse(\Base\Interfaces\ResponseInterface $response)
+    public function setResponse(\Psr\Http\Message\OutgoingResponseInterface $response)
     {
         $this->response = $response;
         $this->sender = new \Aura\Web\ResponseSender($response->getInstance());

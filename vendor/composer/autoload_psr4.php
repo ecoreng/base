@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'League\\Plates\\' => array($vendorDir . '/league/plates/src'),
     'Base\\' => array($vendorDir . '/base/src'),
     'Auryn\\' => array($vendorDir . '/rdlowrey/auryn/lib'),

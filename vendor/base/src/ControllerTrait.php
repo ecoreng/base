@@ -14,18 +14,19 @@ trait ControllerTrait
         $this->view = $view;
     }
 
-    public function setResponse(\Base\Interfaces\ResponseInterface $response)
+    public function setResponse(\Psr\Http\Message\OutgoingResponseInterface $response)
     {
         $this->response = $response;
     }
 
-    public function setRequest(\Base\Interfaces\RequestInterface $request)
+    public function setRequest(\Psr\Http\Message\IncomingRequestInterface $request)
     {
         $this->request = $request;
     }
 
     protected function render($template, $data = [], $status = 200, $contentType = 'text/html; charset=utf-8')
     {
+        // NOT READY
         $view = $this->getView();
     }
 
@@ -51,7 +52,8 @@ trait ControllerTrait
     protected function response($body = '', $status = 200, $contentType = 'text/html; charset=utf-8')
     {
         $response = $this->response;
-        $response->setBody($body);
+        //Temporary fix (read about this @ its definition in AuraResponseContractor)
+        $response->setBodyString($body);
         $response->setStatus($status);
         $response->setHeader('Content-type', $contentType);
         return $response;
@@ -70,7 +72,8 @@ trait ControllerTrait
     protected function redirect($url, $status = 301)
     {
         $response = $this->response;
-        $response->setBody('');
+        //Temporary fix (read about this @ its definition in AuraResponseContractor)
+        $response->setBodyString('');
         $response->setStatus($status);
         $response->setHeader('Location', $url);
         return $response;

@@ -31,7 +31,15 @@ class PhrouteResolver implements \Phroute\HandlerResolverInterface
         if ($handler instanceof \Closure) {
             $di = $this->di;
             $handler = function () use ($di, $handler) {
-                return $di->execute($handler);
+                $args = func_get_args();
+                $params = (new \ReflectionFunction($handler))->getParameters();
+                
+                $urlArgs = array_intersect_key($params, $args);
+                $urlArgsReady = [];
+                foreach ($urlArgs as $key => $arg) {
+                    $urlArgsReady[':' . $arg->name] = $args[$key];
+                }
+                return $di->execute($handler, $urlArgsReady);
             };
         }
         return $handler;
