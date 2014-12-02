@@ -30,14 +30,8 @@ class App implements AppInterface, MiddlewareCallable
     protected $middleware = [];
 
     public function __construct(
-        Router $router,
-        Dispatcher $dispatcher,
-        Autoloader $autoloader,
-        $config = [],
-        MessageFactory $messageFactory,
-        ResponseSender $responseSender,
-        Request $request,
-        Injector $di
+    Router $router, Dispatcher $dispatcher, Autoloader $autoloader, $config = [], MessageFactory $messageFactory,
+            ResponseSender $responseSender, Request $request, Injector $di
     )
     {
         $this->router = $router;
@@ -100,7 +94,10 @@ class App implements AppInterface, MiddlewareCallable
     public function run()
     {
         $lastMiddleware = reset($this->middleware);
-        $lastMiddleware->setNextMiddleware($this);
+        if ($lastMiddleware instanceof Middleware) {
+            $lastMiddleware->setNextMiddleware($this);
+        }
+        $this->middleware[] = $this;
         $firstMiddleware = end($this->middleware);
         $firstMiddleware->call();
     }
@@ -155,7 +152,7 @@ class App implements AppInterface, MiddlewareCallable
      */
     public function add(Middleware $middleware)
     {
-        
+
         $middleware->setApplication($this);
         $middleware->setInjector($this->di);
         if (count($this->middleware) > 0) {
