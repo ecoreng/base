@@ -1,6 +1,6 @@
 {
     "name": "basephp/base",
-    "description": "mini fw",
+    "description": "mini framework",
     "require": {
         "phroute/phroute": "1.4.*",
         "filp/whoops": "~1.0",
@@ -12,7 +12,7 @@
     },
 		"autoload": {
 			"psr-4": {
-				"Base\\": "vendor/base/src/"
+				"Base\\": "src/"
 			}
 		},
     "license": "MIT",
