@@ -4,7 +4,7 @@ namespace Base;
 
 class PhrouteRouterContractor extends \Phroute\RouteCollector implements \Base\Interfaces\RouterInterface
 {
-    public function addRoute()
+    public function addRoute($httpMethod, $route, $handler, array $filters = [])
     {
         $args = func_get_args();
         return call_user_func_array('parent::addRoute', $args);

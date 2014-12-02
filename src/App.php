@@ -93,12 +93,12 @@ class App implements AppInterface, MiddlewareCallable
      */
     public function run()
     {
-        $lastMiddleware = reset($this->middleware);
+        $lastMiddleware = end($this->middleware);
         if ($lastMiddleware instanceof Middleware) {
             $lastMiddleware->setNextMiddleware($this);
         }
         $this->middleware[] = $this;
-        $firstMiddleware = end($this->middleware);
+        $firstMiddleware = reset($this->middleware);
         $firstMiddleware->call();
     }
 
