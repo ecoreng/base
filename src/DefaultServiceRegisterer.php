@@ -93,9 +93,10 @@ class DefaultServiceRegisterer implements \Base\Interfaces\ServiceRegistererInte
         $di->define('\Base\ComposerAutoloaderContractor', [':autoloader' => $this->autoloader]);
 
         // - Dependency Injection
-        $di->delegate('\Auryn\Injector', function () use ($di) {
+        $di->delegate('\Auryn\Provider', function () use ($di) {
             return $di;
         });
+
 
         // - Framework default app
         $di->define('\Base\App', [
