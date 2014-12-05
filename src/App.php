@@ -151,7 +151,7 @@ class App implements AppInterface, MiddlewareCallable
 
     public function setConfigArray(array $config)
     {
-        $this->config = $config;
+        $this->config = array_replace_recursive($this->config, $config);
     }
 
     /**
