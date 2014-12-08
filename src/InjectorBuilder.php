@@ -2,16 +2,33 @@
 
 namespace Base;
 
+use \Base\Interfaces\ServiceRegistererInterface as Services;
+
 class InjectorBuilder
 {
 
     protected $di;
     protected $registerers;
 
-    public function __construct()
+    public function __construct(\Auryn\Injector $di = null)
+    {
+        $this->setDi($di);
+    }
+
+    public function register()
     {
         $registerers = func_get_args();
         $this->registerers = $registerers;
+
+        foreach ($this->registerers as $reg) {
+            if (!($reg instanceof Services)) {
+                throw new \Exception(
+                    get_class($reg) . ' is not an instance of \Base\Interfaces\ServiceRegistererInterface'
+                );
+            }
+            $reg->register($this->di);
+        }
+        return $this;
     }
 
     public function setDi(\Auryn\Injector $di = null)
@@ -20,32 +37,8 @@ class InjectorBuilder
         $this->di = $di;
     }
 
-    public function register(\Base\Interfaces\ServiceRegistererInterface $sr)
-    {
-        if ($this->di === null) {
-            $this->setDi();
-        }
-        $sr->register($this->di);
-        return $this;
-    }
-
     public function getDi()
     {
         return $this->di;
     }
-
-    public function getApp()
-    {
-        foreach ($this->registerers as $reg) {
-            $this->register($reg);
-        }
-        $di = $this->getDi();
-        return $di->make('\Base\Interfaces\AppInterface');
-    }
-
-    public function getComponents()
-    {
-        return [$this->getApp(), $this->getDi()];
-    }
-
 }
