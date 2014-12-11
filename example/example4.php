@@ -16,24 +16,15 @@ use \ExampleCo\Example\CustomServiceRegisterer as CustomServices;
  * those service registerers
  */
 $app = (new Builder)
-        ->register(new DefaultServices($autoloader))
-        ->register(new CustomServices)
+        ->register(
+            new DefaultServices($autoloader),
+            new CustomServices
+        )
         ->getDi()
         ->make('\Base\Interfaces\AppInterface');
 
 // Optional Config base-url if necessary
 $app->setConfig('environment.base-url', '/base/example/example4.php');
-
-// Optional Custom Error Handler
-$woops = new \Whoops\Run;
-if ($app->getConfig('app.mode') === 'dev') {
-    $woops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
-} else {
-    $woops->pushHandler(function ($e) {
-        echo 'Friendly error page and send an email to the developer';
-    });
-}
-$woops->register();
 
 // load a full controller into the router (route prefix, controller class)
 $app->getRouter()->controller('/', '\ExampleCo\Example\ExampleController');

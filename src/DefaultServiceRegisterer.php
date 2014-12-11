@@ -87,6 +87,9 @@ class DefaultServiceRegisterer implements \Base\Interfaces\ServiceRegistererInte
             $mf = $di->make('\Base\Interfaces\ServerSideMessageFactoryInterface');
             $obj->setResponse($mf->newOutgoingResponse());
             $obj->setRequest($req);
+            if (method_exists($obj, 'ready')) {
+                $obj->ready();
+            }
         });
 
         // - Autoloader concretion that implements the AutoloaderInterface
