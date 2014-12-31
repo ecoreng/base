@@ -10,7 +10,7 @@ class GenericJsonView extends \ArrayObject implements \Base\Interfaces\ViewInter
         parent::__construct([]);
     }
 
-    public function render($template = null, array $data = array(), $prefix = null)
+    public function render($template = null, array $data = array())
     {
         return json_encode(array_merge((array) $this, $data));
     }

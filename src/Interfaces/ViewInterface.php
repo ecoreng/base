@@ -5,5 +5,5 @@ namespace Base\Interfaces;
 interface ViewInterface
 {
 
-    public function render($template, array $data = array(), $prefix = null);
+    public function render($template, array $data = array());
 }

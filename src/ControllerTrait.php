@@ -27,8 +27,7 @@ trait ControllerTrait
     protected function render($template, $data = [], $status = 200, $contentType = 'text/html; charset=utf-8')
     {
         $view = $this->getView();
-        $prefix = isset($this->viewPrefix) ? $this->viewPrefix : null;
-        return $this->response($view->render($template, $data, $prefix), $status, $contentType);
+        return $this->response($view->render($template, $data), $status, $contentType);
     }
 
     protected function getView()
