@@ -2,6 +2,11 @@
 
 namespace Base;
 
+use \Base\Interfaces\RouterInterface as Router;
+use \Phroute\HandlerResolverInterface as Handler;
+use \Psr\Http\Message\IncomingRequestInterface as Request;
+use \Psr\Http\Message\OutgoingResponseInterface as Response;
+
 class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterface
 {
 
@@ -9,12 +14,16 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
     protected $resolver;
     protected $baseUrl = '';
 
-    public function __construct(\Base\Interfaces\RouterInterface $router)
+    public function __construct(Router $router)
     {
         $this->router = $router;
     }
 
-    public function setResolver(\Phroute\HandlerResolverInterface $resolver)
+    public function setRouter(Router $router) {
+        $this->router = $router;
+    }
+
+    public function setResolver(Handler $resolver)
     {
         $this->resolver = $resolver;
     }
@@ -29,7 +38,7 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
         $this->baseUrl = $baseUrl;
     }
 
-    public function dispatch(\Psr\Http\Message\IncomingRequestInterface $request)
+    public function dispatch(Request $request)
     {
         $this->initDispatcher();
         $url = parse_url($request->getUrl(), PHP_URL_PATH);
@@ -43,11 +52,10 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
         $bufferedBody = ob_get_clean();
         ob_end_clean();
 
-        if ($response instanceof \Base\Interfaces\ResponseInterface || $bufferedBody === '') {
+        if ($response instanceof Response || $bufferedBody === '') {
             return $response;
         } else {
             return $bufferedBody;
         }
     }
-
 }

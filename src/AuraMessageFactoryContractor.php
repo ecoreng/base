@@ -17,6 +17,11 @@ class AuraMessageFactoryContractor implements MessageFactory
         $this->resetFactory($environment);
     }
 
+    public function setFactory(WebFactory $factory)
+    {
+        $this->factory = $factory;
+    }
+
     public function resetFactory(array $environment = [])
     {
         $env = array_key_exists('_ENV', $environment) ? array_merge($_ENV, $environment['_ENV']) : $_ENV;
@@ -43,5 +48,4 @@ class AuraMessageFactoryContractor implements MessageFactory
     {
         return new Response($this->factory->newResponse());
     }
-
 }

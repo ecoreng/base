@@ -2,13 +2,16 @@
 
 namespace Base;
 
-class AuraResponseSenderContractor implements \Base\Interfaces\ResponseSenderInterface
+use \Base\Interfaces\ResponseSenderInterface as Sender;
+use \Psr\Http\Message\OutgoingResponseInterface as Response;
+
+class AuraResponseSenderContractor implements Sender
 {
-    
+
     protected $response;
     protected $sender;
-    
-    public function setResponse(\Psr\Http\Message\OutgoingResponseInterface $response)
+
+    public function setResponse(Response $response)
     {
         $this->response = $response;
         $this->sender = new \Aura\Web\ResponseSender($response->getInstance());
@@ -18,4 +21,5 @@ class AuraResponseSenderContractor implements \Base\Interfaces\ResponseSenderInt
     {
         call_user_func($this->sender);
     }
+
 }
