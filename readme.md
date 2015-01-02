@@ -1,20 +1,20 @@
-``Base`` is a microframework (more like a mini framework) that features, Aura components, Fast Routing (nikita popov's algorithm), PHP FIG PSR7 (mostly) compatible, Dependency Injection for controllers AND methods (Controller methods, Closures, etc), Full controller registration in router, Middleware support ...
+Base is a microframework (more like a mini framework) inspired in Slim that features, Aura components, Fast Routing (nikita popov's algorithm), PHP FIG PSR7 (mostly) compatible, Dependency Injection for controllers AND methods (Controller methods, Closures, etc), Full controller registration in router, Middleware support ...
 
 This frameworks uses
 ====================
-aura/web (Request / Response)
-aura/session (Session)
-rdlowrey/auryn (Dependency Injection)
-psr/http-message (PHP-FIG PSR-7)
-phroute/phroute (Router)
+- aura/web (Request / Response)
+- aura/session (Session)
+- rdlowrey/auryn (Dependency Injection)
+- psr/http-message (PHP-FIG PSR-7)
+- phroute/phroute (Router)
 
 ----> Extra packages available but not included here:
-league/plates (View)
-+ (array) Module Loader
-+ (array) Route Loader
-+ Spot2 (Data Mapper (Doctrine))
-aura/input (form builder)
-vlucas/dotenv (env variable loading for development)
+- league/plates (View)
+- (array) Module Loader
+- (array) Route Loader
+- Spot2 (Data Mapper (Doctrine))
+- aura/input (form builder)
+- vlucas/dotenv (env variable loading for development)
 
 Usage:
 
