@@ -28,7 +28,7 @@ use \Psr\Http\Message\IncomingRequestInterface as Request;
 use \Base\DefaultServiceRegisterer as Services;
 
 $app = (new Builder)
-        ->register(new Services([], $autoloader))
+        ->register(new Services($autoloader))
         ->getDi()
         ->make('\Base\Interfaces\AppInterface');
 
@@ -50,7 +50,7 @@ use \Base\InjectorBuilder as Builder
 use \Base\DefaultServiceRegisterer as Services
 
 $app = (new Builder)
-        ->register(new Services([], $autoloader))
+        ->register(new Services($autoloader))
         ->getDi()
         ->make('\Base\Interfaces\AppInterface');
 
