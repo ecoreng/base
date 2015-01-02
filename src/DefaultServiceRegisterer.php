@@ -2,14 +2,18 @@
 
 namespace Base;
 
-class DefaultServiceRegisterer implements \Base\Interfaces\ServiceRegistererInterface
+use \Base\Interfaces\AutoloaderInterface as Autoloader;
+use \Composer\Autoload\ClassLoader as ClassLoader;
+use \Base\Interfaces\ServiceRegistererInterface as Service;
+
+class DefaultServiceRegisterer implements Service
 {
 
     protected $di;
     protected $config;
     protected $autoloader;
 
-    public function __construct(\Composer\Autoload\ClassLoader $autoloader, $config = [])
+    public function __construct(ClassLoader $autoloader, $config = [])
     {
         $this->config = $config;
         $this->autoloader = $autoloader;

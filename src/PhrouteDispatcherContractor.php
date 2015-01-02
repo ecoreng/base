@@ -50,7 +50,6 @@ class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterfac
         ob_start();
         $response = $this->dispatcher->dispatch($request->getMethod(), $url);
         $bufferedBody = ob_get_clean();
-        ob_end_clean();
 
         if ($response instanceof Response || $bufferedBody === '') {
             return $response;

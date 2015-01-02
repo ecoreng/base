@@ -157,9 +157,9 @@ class App implements AppInterface, MiddlewareCallable
             '_GET' => $_GET,
             '_POST' => $_POST,
             '_COOKIE' => $_COOKIE,
-            '_SERVER' => $_SERVER
+            '_SERVER' => array_merge($_SERVER, ['REQUEST_METHOD' => 'GET'])
         ];
-        $environment = array_merge_recursive($environment, $subEnviroment, ['_SERVER' => ['REQUEST_URI' => $url]]);
+        $environment = array_merge_recursive($environment, $subEnvironment, ['_SERVER' => ['REQUEST_URI' => $url]]);
         $this->messageFactory->resetFactory($environment);
         $request = $this->messageFactory->newIncomingRequest();
         $response = $this->dispatch($request, false);
