@@ -5,7 +5,8 @@ namespace Base;
 class AuraSessionContractor implements \Base\Interfaces\SessionInterface
 {
 
-    protected $activeSegment = null;
+    protected $activeSegment;
+    protected $session;
 
     public function __construct(\Aura\Session\Session $auraSession)
     {
