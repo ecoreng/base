@@ -15,7 +15,6 @@ class AuraSessionContractor implements \Base\Interfaces\SessionInterface
 
     public function get($key, $default = null)
     {
-
         return $this->getSegment()->get($key, $default);
     }
 
@@ -24,6 +23,10 @@ class AuraSessionContractor implements \Base\Interfaces\SessionInterface
         return $this->getSegment()->get($key, $value);
     }
 
+    public function start(){
+        return $this->session->start();
+    }
+    
     public function __destruct()
     {
         $this->session->commit();
