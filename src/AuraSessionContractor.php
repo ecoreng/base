@@ -45,5 +45,26 @@ class AuraSessionContractor implements \Base\Interfaces\SessionInterface
         }
         return $this->activeSegment;
     }
+    
+    // delegate all other calls to instance
+    public function __call($name, $args)
+    {
+        return call_user_func_array([$this->getSegment(), $name], $args);
+    }
+
+    public function __set($name, $value)
+    {
+        return $this->session->{$name} = $value;
+    }
+
+    public function __get($attr)
+    {
+        return $this->session->$attr;
+    }
+
+    public function getInstance()
+    {
+        return $this->session;
+    }
 
 }

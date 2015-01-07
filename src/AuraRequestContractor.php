@@ -114,7 +114,9 @@ class AuraRequestContractor implements \Psr\Http\Message\IncomingRequestInterfac
      */
     public function getBodyParams()
     {
-        return $this->request->content->get();
+        // or any other http method from the content;
+        // right now it's just post
+        return $this->request->post->get();
     }
 
     /**
