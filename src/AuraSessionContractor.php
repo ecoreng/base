@@ -23,10 +23,21 @@ class AuraSessionContractor implements \Base\Interfaces\SessionInterface
         return $this->getSegment()->get($key, $value);
     }
 
-    public function start(){
+    public function getFlash($key, $alt = null)
+    {
+        return $this->getSegment()->getFlash($key, $alt);
+    }
+
+    public function getFlashNext($key, $alt = null)
+    {
+        return $this->getSegment()->getFlashNext($key, $alt);
+    }
+
+    public function start()
+    {
         return $this->session->start();
     }
-    
+
     public function __destruct()
     {
         $this->session->commit();
@@ -45,7 +56,7 @@ class AuraSessionContractor implements \Base\Interfaces\SessionInterface
         }
         return $this->activeSegment;
     }
-    
+
     // delegate all other calls to instance
     public function __call($name, $args)
     {
