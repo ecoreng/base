@@ -3,16 +3,15 @@
 // require and return composer autoloader
 $autoloader = require('../vendor/autoload.php');
 
-use \Base\DefaultServiceRegisterer as DefaultServices;
-use \Base\InjectorBuilder as Builder;
 use \Psr\Http\Message\IncomingRequestInterface as Request;
+use \Base\Concrete\DefaultServiceRegisterer as Services;
+use \Base\Concrete\Container;
 
-$app = (new Builder)
-        ->register(new DefaultServices($autoloader))
-        ->getDi()
-        ->make('\Base\App');
+$c = new Container;
+$c->register(new Services($autoloader));
+$app = $c->get('Base\App');
 
-$app->setConfig('environment.base-url', '/base/example/example3.php');
+$app->setConfig('environment.base-url', '/projects/Base/_proto-base/example/example3.php');
 
 // use as microframework with Dependency Injection AND route params
 $app->addRoute('GET', 'test/{id:i}', function ($id, Request $request) {

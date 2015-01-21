@@ -2,11 +2,13 @@
 
 namespace ExampleCo\Example;
 
-class CustomServiceRegisterer implements \Base\Interfaces\ServiceRegistererInterface
+use \Interop\Container\ContainerInterface;
+
+class CustomServiceRegisterer implements \Base\ServiceRegisterer
 {
 
-    public function register(\Auryn\Injector $di)
+    public function register(ContainerInterface $di)
     {
-        $di->alias('\Base\Interfaces\AppInterface', '\ExampleCo\Example\ExampleApp');
+        $di->set('Base\App', 'ExampleCo\Example\ExampleApp');
     }
 }

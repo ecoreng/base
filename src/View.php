@@ -1,8 +1,8 @@
 <?php
 
-namespace Base\Interfaces;
+namespace Base;
 
-interface ViewInterface
+interface View
 {
 
     public function render($template, array $data = array());

@@ -1,6 +1,10 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
+
+use \Base\View;
+use \Psr\Http\Message\OutgoingResponseInterface as Response;
+use \Psr\Http\Message\IncomingRequestInterface as Request;
 
 trait ControllerTrait
 {
@@ -9,17 +13,17 @@ trait ControllerTrait
     protected $response;
     protected $request;
 
-    public function setView(\Base\Interfaces\ViewInterface $view)
+    public function setView(View $view)
     {
         $this->view = $view;
     }
 
-    public function setResponse(\Psr\Http\Message\OutgoingResponseInterface $response)
+    public function setResponse(Response $response)
     {
         $this->response = $response;
     }
 
-    public function setRequest(\Psr\Http\Message\IncomingRequestInterface $request)
+    public function setRequest(Request $request)
     {
         $this->request = $request;
     }
@@ -46,7 +50,7 @@ trait ControllerTrait
 
     protected function viewReady()
     {
-        return $this->getViewObject() instanceof \Base\Interfaces\ViewInterface;
+        return $this->getViewObject() instanceof View;
     }
 
     protected function response($body = '', $status = 200, $contentType = 'text/html; charset=utf-8')

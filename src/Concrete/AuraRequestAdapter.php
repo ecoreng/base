@@ -1,8 +1,10 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
-class AuraRequestContractor implements \Psr\Http\Message\IncomingRequestInterface
+use \Psr\Http\Message\IncomingRequestInterface as Request;
+
+class AuraRequestAdapter implements Request
 {
 
     protected $request;

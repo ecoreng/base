@@ -1,8 +1,8 @@
 <?php
 
-namespace Base\Interfaces;
+namespace Base;
 
-interface AutoloaderInterface
+interface Autoloader
 {
     
     public function addPsr4($prefix, $paths, $prepend = false);

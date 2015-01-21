@@ -2,7 +2,7 @@
 
 namespace ExampleCo\Example;
 
-class CustomMiddleware extends \Base\Middleware
+class CustomMiddleware extends \Base\Concrete\Middleware implements \Base\Middleware
 {
 
     public function call()

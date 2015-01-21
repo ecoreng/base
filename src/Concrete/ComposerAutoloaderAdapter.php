@@ -1,10 +1,10 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
 use \Composer\Autoload\ClassLoader as Loader;
 
-class ComposerAutoloaderContractor implements \Base\Interfaces\AutoloaderInterface
+class ComposerAutoloaderAdapter implements \Base\Autoloader
 {
 
     protected $autoloader;

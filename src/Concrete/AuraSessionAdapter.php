@@ -1,14 +1,17 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
-class AuraSessionContractor implements \Base\Interfaces\SessionInterface
+use \Base\Session;
+use \Aura\Session\Session as AuraSession;
+
+class AuraSessionAdapter implements Session
 {
 
     protected $activeSegment;
     protected $session;
 
-    public function __construct(\Aura\Session\Session $auraSession)
+    public function __construct(AuraSession $auraSession)
     {
         $this->session = $auraSession;
     }

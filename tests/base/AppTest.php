@@ -2,9 +2,9 @@
 
 namespace Base\Test;
 
-use \Base\DefaultServiceRegisterer as DefaultServices;
-use \Base\InjectorBuilder as Builder;
-use \Base\App;
+use \Base\Concrete\DefaultServiceRegisterer as Services;
+use \Base\Concrete\Container as BContainer;
+use \Base\Concrete\App;
 
 class AppTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,10 +14,9 @@ class AppTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $autoloader = $this->getMock('\Composer\Autoload\ClassLoader');
-        $this->app = (new Builder)
-                ->register(new DefaultServices($autoloader))
-                ->getDi()
-                ->make('\Base\Interfaces\AppInterface');
+        $c = new BContainer;
+        $c->register(new Services($autoloader));
+        $this->app = $c->get('Base\App');
     }
 
     public function setTestRoute()
@@ -29,12 +28,12 @@ class AppTest extends \PHPUnit_Framework_TestCase
 
     public function testInterfaceIsApp()
     {
-        $this->assertInstanceOf('\Base\App', $this->app);
+        $this->assertInstanceOf('Base\App', $this->app);
     }
 
     public function testRouterInstance()
     {
-        $this->assertInstanceOf('\Base\Interfaces\RouterInterface', $this->app->getRouter());
+        $this->assertInstanceOf('Base\Router', $this->app->getRouter());
     }
 
     public function testAddGetRoute()
@@ -50,7 +49,7 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $rm = $r->getProperty('middleware');
         $rm->setAccessible(true);
 
-        $mw = $this->getMockBuilder('\Base\Interfaces\MiddlewareInterface')
+        $mw = $this->getMockBuilder('Base\Middleware')
                 ->setMethods([
                     'call',
                     'setApplication',
@@ -61,46 +60,45 @@ class AppTest extends \PHPUnit_Framework_TestCase
                     'getNextMiddleware'
                 ])
                 ->getMock();
-        
+
         $mw->expects($this->once())
                 ->method('call');
-        
+
         $this->app->add($mw);
         $this->app->run();
-        
+
         $mws = $rm->getValue($this->app);
         $appMw = reset($mws);
         $this->assertSame($mw, $appMw);
-        
     }
 
     public function testCall()
     {
         $this->setTestRoute();
-        
+
         $r = new \ReflectionObject($this->app);
         $rm = $r->getMethod('dispatch');
         $rm->setAccessible(true);
-        $req = (new \Base\AuraMessageFactoryContractor([
+        $req = (new \Base\Concrete\AuraMessageFactoryAdapter([
             '_SERVER' => [
                 'REQUEST_URI' => '/test/22',
                 'REQUEST_METHOD' => 'GET'
             ]
-        ]))->newIncomingRequest();
-        
+                ]))->newIncomingRequest();
+
         $res = $rm->invoke($this->app, $req, false);
-        
-        $this->assertInstanceOf('\Psr\Http\Message\OutgoingResponseInterface', $res);
+
+        $this->assertInstanceOf('Psr\Http\Message\OutgoingResponseInterface', $res);
         $this->assertEquals('test:22', $res->content->get());
         $this->assertEquals(200, $res->status->getCode());
     }
-    
+
     public function testCallEmpty()
     {
         try {
             $this->app->call();
         } catch (\Exception $e) {
-            $this->assertInstanceOf('\Phroute\Exception\HttpRouteNotFoundException', $e);
+            $this->assertInstanceOf('Phroute\Exception\HttpRouteNotFoundException', $e);
         }
     }
 
@@ -108,7 +106,7 @@ class AppTest extends \PHPUnit_Framework_TestCase
     {
         $this->setTestRoute();
         $res = $this->app->subRequest('/test/22', []);
-        $this->assertInstanceOf('\Psr\Http\Message\OutgoingResponseInterface', $res);
+        $this->assertInstanceOf('Psr\Http\Message\OutgoingResponseInterface', $res);
         $this->assertEquals('test:22', $res->content->get());
         $this->assertEquals(200, $res->status->getCode());
     }

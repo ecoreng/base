@@ -1,8 +1,10 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
-class GenericJsonView extends \ArrayObject implements \Base\Interfaces\ViewInterface
+use \Base\View;
+
+class GenericJsonView extends \ArrayObject implements View
 {
 
     public function __construct()

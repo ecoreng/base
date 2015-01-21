@@ -1,8 +1,8 @@
 <?php
 
-namespace Base\Interfaces;
+namespace Base;
 
-interface SessionInterface
+interface Session
 {
 
     public function get($key, $alt = null);

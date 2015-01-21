@@ -2,10 +2,10 @@
 
 namespace ExampleCo\Example;
 
-class ExampleController implements \Base\Interfaces\ControllerInterface
+class ExampleController implements \Base\Controller
 {
 
-    use \Base\ControllerTrait;
+    use \Base\Concrete\ControllerTrait;
 
     protected $request;
 

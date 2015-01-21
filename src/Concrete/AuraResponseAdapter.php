@@ -1,13 +1,16 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
-class AuraResponseContractor implements \Psr\Http\Message\OutgoingResponseInterface
+use \Psr\Http\Message\OutgoingResponseInterface as Response;
+use \Aura\Web\Response as AuraResponse;
+
+class AuraResponseAdapter implements Response
 {
 
     protected $response;
 
-    public function __construct(\Aura\Web\Response $response)
+    public function __construct(AuraResponse $response)
     {
         $this->response = $response;
     }

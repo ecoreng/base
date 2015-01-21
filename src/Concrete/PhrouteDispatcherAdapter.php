@@ -1,13 +1,14 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
-use \Base\Interfaces\RouterInterface as Router;
+use \Base\Router;
 use \Phroute\HandlerResolverInterface as Handler;
 use \Psr\Http\Message\IncomingRequestInterface as Request;
 use \Psr\Http\Message\OutgoingResponseInterface as Response;
+use \Base\Dispatcher;
 
-class PhrouteDispatcherContractor implements \Base\Interfaces\DispatcherInterface
+class PhrouteDispatcherAdapter implements Dispatcher
 {
 
     protected $router;

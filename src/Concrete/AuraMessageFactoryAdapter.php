@@ -1,13 +1,13 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
 use \Base\Interfaces\ServerSideMessageFactoryInterface as MessageFactory;
-use \Base\AuraRequestContractor as Request;
-use \Base\AuraResponseContractor as Response;
+use \Base\Concrete\AuraRequestAdapter as Request;
+use \Base\Concrete\AuraResponseAdapter as Response;
 use \Aura\Web\WebFactory;
 
-class AuraMessageFactoryContractor implements MessageFactory
+class AuraMessageFactoryAdapter implements MessageFactory
 {
 
     protected $factory;

@@ -1,11 +1,11 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
-use \Base\Interfaces\RouterInterface as Router;
+use \Base\Router;
 use \Phroute\RouteCollector as Collector;
 
-class PhrouteRouterContractor extends Collector implements Router
+class PhrouteRouterAdapter extends Collector implements Router
 {
 
     public function addRoute($httpMethod, $route, $handler, array $filters = [])
@@ -23,4 +23,5 @@ class PhrouteRouterContractor extends Collector implements Router
     {
         return call_user_func_array('parent::addRoute', $args);
     }
+
 }

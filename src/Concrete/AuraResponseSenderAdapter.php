@@ -1,11 +1,12 @@
 <?php
 
-namespace Base;
+namespace Base\Concrete;
 
-use \Base\Interfaces\ResponseSenderInterface as Sender;
+use \Base\ResponseSender as Sender;
 use \Psr\Http\Message\OutgoingResponseInterface as Response;
+use \Aura\Web\ResponseSender;
 
-class AuraResponseSenderContractor implements Sender
+class AuraResponseSenderAdapter implements Sender
 {
 
     protected $response;
@@ -14,7 +15,7 @@ class AuraResponseSenderContractor implements Sender
     public function setResponse(Response $response)
     {
         $this->response = $response;
-        $this->sender = new \Aura\Web\ResponseSender($response->getInstance());
+        $this->sender = new ResponseSender($response->getInstance());
     }
 
     public function send()
