@@ -11,7 +11,6 @@ use \Base\Concrete\DefaultServiceRegisterer as Services;
 use \Base\Concrete\Container;
 use \ExampleCo\Example\CustomServiceRegisterer as CustomServices;
 
-
 /*
  * Get the object registered to fullfill the App interface contract; from an injector built using
  * those service registerers
