@@ -2,7 +2,7 @@
 
 namespace Base;
 
-use \Psr\Http\Message\OutgoingResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
 
 interface ResponseSender
 {

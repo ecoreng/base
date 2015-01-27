@@ -4,7 +4,7 @@ namespace Base\Interfaces;
 
 interface ServerSideMessageFactoryInterface
 {
-    public function newIncomingRequest();
-    public function newOutgoingResponse();
+    public function newRequest();
+    public function newResponse();
     public function resetFactory(array $environment);
 }

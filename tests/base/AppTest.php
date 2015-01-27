@@ -79,18 +79,17 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $r = new \ReflectionObject($this->app);
         $rm = $r->getMethod('dispatch');
         $rm->setAccessible(true);
-        $req = (new \Base\Concrete\AuraMessageFactoryAdapter([
-            '_SERVER' => [
+        $req = (new \Base\Concrete\PhlyMessageFactory(null, [
+            'server' => [
                 'REQUEST_URI' => '/test/22',
                 'REQUEST_METHOD' => 'GET'
             ]
-                ]))->newIncomingRequest();
+                ]))->newRequest();
 
         $res = $rm->invoke($this->app, $req, false);
-
-        $this->assertInstanceOf('Psr\Http\Message\OutgoingResponseInterface', $res);
-        $this->assertEquals('test:22', $res->content->get());
-        $this->assertEquals(200, $res->status->getCode());
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $res);
+        $this->assertEquals('test:22', (string) $res->getBody());
+        $this->assertEquals(200, $res->getStatusCode());
     }
 
     public function testCallEmpty()
@@ -106,9 +105,9 @@ class AppTest extends \PHPUnit_Framework_TestCase
     {
         $this->setTestRoute();
         $res = $this->app->subRequest('/test/22', []);
-        $this->assertInstanceOf('Psr\Http\Message\OutgoingResponseInterface', $res);
-        $this->assertEquals('test:22', $res->content->get());
-        $this->assertEquals(200, $res->status->getCode());
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $res);
+        $this->assertEquals('test:22', (string) $res->getBody());
+        $this->assertEquals(200, $res->getStatusCode());
     }
 
     public function testDefaultConfig()

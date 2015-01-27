@@ -4,8 +4,8 @@ namespace Base\Concrete;
 
 use \Base\Router;
 use \Phroute\HandlerResolverInterface as Handler;
-use \Psr\Http\Message\IncomingRequestInterface as Request;
-use \Psr\Http\Message\OutgoingResponseInterface as Response;
+use \Psr\Http\Message\RequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
 use \Base\Dispatcher;
 
 class PhrouteDispatcherAdapter implements Dispatcher
@@ -42,7 +42,8 @@ class PhrouteDispatcherAdapter implements Dispatcher
     public function dispatch(Request $request)
     {
         $this->initDispatcher();
-        $url = parse_url($request->getUrl(), PHP_URL_PATH);
+        
+        $url = $request->getUri()->getPath();
         if ($this->baseUrl !== '') {
             if (stripos($url, $this->baseUrl) === 0) {
                 $url = str_replace($this->baseUrl, '', $url);

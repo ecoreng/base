@@ -3,7 +3,7 @@
 namespace Base;
 
 use \Base\Router;
-use \Psr\Http\Message\IncomingRequestInterface as Request;
+use \Psr\Http\Message\RequestInterface as Request;
 
 interface Dispatcher
 {

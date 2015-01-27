@@ -11,8 +11,9 @@ class ExampleController implements \Base\Controller
 
     public function getIndex()
     {
+        
         //return $this->redirect('http://www.google.com');
-        return $this->response('getIndex from ExampleController; via: ' . $this->request->getMethod());
+        return $this->response('getIndex from ExampleController; via: ' . $this->getRequest()->getMethod());
         //return $this->notFound('not found!');
     }
 

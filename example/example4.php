@@ -21,7 +21,7 @@ $c->register(new CustomServices);
 $app = $c->get('Base\App');
 
 // Optional Config base-url if necessary
-$app->setConfig('environment.base-url', '/projects/Base/_proto-base/example/example4.php');
+$app->setConfig('environment.base-url', '/Projects/base-repo/example/example4.php');
 
 // load a full controller into the router (route prefix, controller class)
 $app->getRouter()->controller('/', '\ExampleCo\Example\ExampleController');

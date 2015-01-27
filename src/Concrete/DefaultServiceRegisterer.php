@@ -29,9 +29,9 @@ class DefaultServiceRegisterer implements Service
 
         $di->set('Base\Session', 'Base\Concrete\AuraSessionAdapter');
 
-        $di->set('Base\Interfaces\ServerSideMessageFactoryInterface', 'Base\Concrete\AuraMessageFactoryAdapter');
-        $di->set('Psr\Http\Message\IncomingRequestInterface', 'Base\Concrete\AuraRequestAdapter');
-        $di->set('Base\ResponseSender', 'Base\Concrete\AuraResponseSenderAdapter');
+        $di->set('Base\Interfaces\ServerSideMessageFactoryInterface', 'Base\Concrete\PhlyMessageFactory');
+        $di->set('Psr\Http\Message\RequestInterface', 'Phly\Http\Request');
+        $di->set('Base\ResponseSender', 'Base\Concrete\PhlyResponseSender');
 
         $di->set('Base\View', 'Base\Concrete\GenericJsonView');
 
@@ -50,9 +50,9 @@ class DefaultServiceRegisterer implements Service
         });
 
         // - Request / Response Factory
-        $wf = $di->get('Base\Concrete\AuraMessageFactoryAdapter');
-        $req = $wf->newIncomingRequest();
-        $di->set('Base\Concrete\AuraRequestAdapter', function () use ($req) {
+        $wf = $di->get('Base\Interfaces\ServerSideMessageFactoryInterface');
+        $req = $wf->newRequest();
+        $di->set('Phly\Http\Request', function () use ($req) {
             return $req;
         });
 
@@ -60,8 +60,8 @@ class DefaultServiceRegisterer implements Service
         $mf = $di->get('Base\Interfaces\ServerSideMessageFactoryInterface');
         $di->set('Base\Controller')
                 ->withSetter('setView', ['view' => '@Base\View'])
-                ->withSetter('setResponse', ['response' => $wf->newOutgoingResponse()])
-                ->withSetter('setRequest', ['request' => $req]);
+                ->withSetter('setResponse', ['response' => $wf->newResponse()])
+                ->withSetter('setRequest', ['request' => '@Psr\Http\Message\RequestInterface']);
 
         // - Autoloader concretion that implements the AutoloaderInterface
         $di->set('Base\Concrete\ComposerAutoloaderAdapter', null, ['autoloader' => $this->autoloader]);

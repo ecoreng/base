@@ -3,16 +3,16 @@
 namespace Base\Concrete;
 
 use \Base\View;
-use \Psr\Http\Message\OutgoingResponseInterface as Response;
-use \Psr\Http\Message\IncomingRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
+use \Psr\Http\Message\RequestInterface as Request;
+use \Phly\Http\Stream;
 
 trait ControllerTrait
 {
 
     protected $view;
-    protected $response;
-    protected $request;
-
+    protected $responseObject;
+    protected $requestObject;
     public function setView(View $view)
     {
         $this->view = $view;
@@ -20,12 +20,22 @@ trait ControllerTrait
 
     public function setResponse(Response $response)
     {
-        $this->response = $response;
+        $this->responseObject = $response;
     }
 
     public function setRequest(Request $request)
     {
-        $this->request = $request;
+        $this->requestObject = $request;
+    }
+    
+    public function getRequest()
+    {
+        return $this->requestObject;
+    }
+    
+    public function getResponse()
+    {
+        return $this->responseObject;
     }
 
     protected function render($template, $data = [], $status = 200, $contentType = 'text/html; charset=utf-8')
@@ -55,11 +65,11 @@ trait ControllerTrait
 
     protected function response($body = '', $status = 200, $contentType = 'text/html; charset=utf-8')
     {
-        $response = $this->response;
-        //Temporary fix (read about this @ its definition in AuraResponseContractor)
-        $response->setBodyString($body);
-        $response->setStatus($status);
-        $response->setHeader('Content-type', $contentType);
+        $response = $this->responseObject;
+        $response->getBody()
+                ->write($body);
+        $response->withStatus($status)
+                ->withHeader('Content-type', $contentType);
         return $response;
     }
 
@@ -75,11 +85,11 @@ trait ControllerTrait
 
     protected function redirect($url, $status = 301)
     {
-        $response = $this->response;
-        //Temporary fix (read about this @ its definition in AuraResponseContractor)
-        $response->setBodyString('');
-        $response->setStatus($status);
-        $response->setHeader('Location', $url);
+        $response = $this->responseObject;
+        $response->getBody()
+                ->write('');
+        $response->withStatus($status)
+                ->withHeader('Location', $url);
         return $response;
     }
 

@@ -9,7 +9,7 @@ $c = new Container;
 $c->register(new Services($autoloader));
 $app = $c->get('Base\App');
 
-$app->setConfig('environment.base-url', '/projects/Base/_proto-base/example/example1.php');
+$app->setConfig('environment.base-url', '/Projects/base-repo/example/example1.php');
 
 // use as microframework
 $app->addRoute('GET', 'test/{id}', function ($id) {

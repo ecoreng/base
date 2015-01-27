@@ -3,8 +3,8 @@
 namespace Base;
 
 use \Base\View;
-use \Psr\Http\Message\OutgoingResponseInterface as Response;
-use \Psr\Http\Message\IncomingRequestInterface  as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
+use \Psr\Http\Message\RequestInterface  as Request;
 
 interface Controller
 {

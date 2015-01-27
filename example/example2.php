@@ -15,7 +15,7 @@ $c->register(new Services($autoloader));
 $c->register(new CustomServices);
 $app = $c->get('Base\App');
 
-$app->setConfig('environment.base-url', '/projects/Base/_proto-base/example/example2.php');
+$app->setConfig('environment.base-url', '/Projects/base-repo/example/example2.php');
 
 // use a controller to handle route using a custom method in the overriden app (see CustomServiceRegisterer)
 $app->get('test', '\ExampleCo\Example\ExampleController:getIndex');

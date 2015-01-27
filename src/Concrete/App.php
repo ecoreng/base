@@ -8,11 +8,12 @@ use \Base\Autoloader;
 use \Base\Interfaces\ServerSideMessageFactoryInterface as MessageFactory;
 use \Base\ResponseSender;
 use \Base\App as AppInterface;
-use \Psr\Http\Message\IncomingRequestInterface as Request;
-use \Psr\Http\Message\OutgoingResponseInterface as Response;
+use \Psr\Http\Message\RequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
 use \Interop\Container\ContainerInterface as IContainer;
 use \Base\Middleware;
 use \Base\Interfaces\MiddlewareCallableInterface as MiddlewareCallable;
+use \Phly\Http\Stream;
 
 class App implements AppInterface, MiddlewareCallable
 {
@@ -101,11 +102,10 @@ class App implements AppInterface, MiddlewareCallable
         $response = $this->dispatcher->dispatch($request);
         // for anonymous functions returning text is easier
         if (is_string($response)) {
-            $responseObject = $this->messageFactory->newOutgoingResponse();
-            $responseObject->content->set($response);
+            $responseObject = $this->messageFactory->newResponse();
+            $responseObject->getBody()->write($response);
             $response = $responseObject;
         }
-
         if ($sendResponse) {
             $this->responseSender->setResponse($response);
             $this->responseSender->send();
@@ -153,15 +153,16 @@ class App implements AppInterface, MiddlewareCallable
     public function subRequest($url, array $subEnvironment = [])
     {
         $environment = [
-            '_ENV' => $_ENV,
-            '_GET' => $_GET,
-            '_POST' => $_POST,
-            '_COOKIE' => $_COOKIE,
-            '_SERVER' => array_merge($_SERVER, ['REQUEST_METHOD' => 'GET'])
+            'body' => $_POST,
+            'query' => $_GET,
+            'cookies' => $_COOKIE,
+            'files' => $_FILES,
+            'server' => array_merge($_SERVER, ['REQUEST_METHOD' => 'GET'])
         ];
-        $environment = array_merge_recursive($environment, $subEnvironment, ['_SERVER' => ['REQUEST_URI' => $url]]);
+        $environment = array_merge_recursive($environment, $subEnvironment, ['server' => ['REQUEST_URI' => $url]]);
         $this->messageFactory->resetFactory($environment);
-        $request = $this->messageFactory->newIncomingRequest();
+        $request = $this->messageFactory->newRequest();
+        
         $response = $this->dispatch($request, false);
         $this->messageFactory->resetFactory();
         return $response;

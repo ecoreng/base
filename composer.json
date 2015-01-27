@@ -2,10 +2,10 @@
     "name": "basephp/base",
     "description": "mini framework",
     "require": {
-        "phroute/phroute": "1.4.*",
-        "aura/web": "~2.0",
+    "phroute/phroute": "1.4.*",
+    "phly/http" :"~1.0-dev@dev",
 		"aura/session": "2.0.0-beta2",
-		"psr/http-message": "~0.5.1",
+		"psr/http-message": "~0.6.0",
 		"basephp/di": "dev-master"
     },
     "repositories": [
