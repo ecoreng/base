@@ -2,10 +2,11 @@ Base is a microframework (more like a mini framework) inspired in Slim that feat
 
 This frameworks uses
 ====================
-- aura/web (Request / Response)
+- phly/http (Request / Response)
 - aura/session (Session)
 - psr/http-message (PHP-FIG PSR-7)
 - phroute/phroute (Router)
+- interop/container
 
 
 Usage:
