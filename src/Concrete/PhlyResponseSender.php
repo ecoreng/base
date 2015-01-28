@@ -30,7 +30,7 @@ class PhlyResponseSender implements \Base\ResponseSender
      */
     protected function sendStatus()
     {
-        header($this->response->getReasonPhrase(), true, $this->response->getStatusCode());
+        header('Status: ' . $this->response->getStatusCode() . ' ' . $this->response->getReasonPhrase(), true, $this->response->getStatusCode());
     }
 
     /**
