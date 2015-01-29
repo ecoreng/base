@@ -68,7 +68,7 @@ trait ControllerTrait
         $response = $this->responseObject;
         $response->getBody()
                 ->write($body);
-        $response->withStatus($status)
+        $response = $response->withStatus($status)
                 ->withHeader('Content-type', $contentType);
         return $response;
     }
@@ -88,7 +88,7 @@ trait ControllerTrait
         $response = $this->responseObject;
         $response->getBody()
                 ->write('');
-        $response->withStatus($status)
+        $response = $response->withStatus($status)
                 ->withHeader('Location', $url);
         return $response;
     }
