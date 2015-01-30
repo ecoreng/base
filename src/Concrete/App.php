@@ -87,7 +87,7 @@ class App implements AppInterface, MiddlewareCallable
      */
     public function getRoute($name, $params = [])
     {
-        return $this->getRouter()->route($name, $params);
+        return $this->getRouter()->getRoute($name, $params);
     }
 
     /**

@@ -16,7 +16,12 @@ class PhrouteRouterAdapter extends Collector implements Router
 
     public function getRoute($name, $params = [])
     {
-        return parent::route($name, $params);
+        $route = parent::route($name, $params);
+        $pre = '/';
+        if (substr($route, 0, 1) === '/') {
+            $pre = '';
+        }
+        return $pre . $route;
     }
 
     public function __call($name, $args)
