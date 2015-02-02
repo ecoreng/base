@@ -26,7 +26,7 @@ class PhrouteRouterAdapter extends Collector implements Router
 
     public function __call($name, $args)
     {
-        return call_user_func_array('parent::addRoute', $args);
+        return call_user_func_array('parent::' . $name, $args);
     }
 
 }

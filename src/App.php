@@ -2,6 +2,8 @@
 
 namespace Base;
 
+use \Base\Middleware;
+
 interface App
 {
     public function getRouter();
@@ -11,4 +13,6 @@ interface App
     public function getConfig($key = null);
     public function setConfigArray(array $config);
     public function run();
+    public function call();
+    public function add(Middleware $middleware);
 }

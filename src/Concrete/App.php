@@ -221,9 +221,13 @@ class App implements AppInterface, MiddlewareCallable
         $middleware->setApplication($this);
         $middleware->setInjector($this->di);
 
+        
         if (count($this->middleware) > 0) {
-            $middleware->setNextMiddleware(end($this->middleware));
+            $fmw = reset($this->middleware);
+            $fmw->setNextMiddleware($middleware);
         }
+        
         $this->middleware[] = $middleware;
+        
     }
 }
