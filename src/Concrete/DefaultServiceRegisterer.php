@@ -43,6 +43,9 @@ class DefaultServiceRegisterer implements Service
         $di->set('Phroute\HandlerResolverInterface', 'Base\Concrete\PhrouteResolver');
         $di->set('Base\Concrete\PhrouteResolver', null, ['di' => $di]);
 
+        $di->set('Base\Request', 'Psr\Http\Message\RequestInterface');
+        $di->set('Base\Response', 'Psr\Http\Message\ResponseInterface');
+        
         // - Session Handling
         $di->set('Aura\Session\Session', function () {
             $sessionFactory = new \Aura\Session\SessionFactory;
@@ -55,12 +58,16 @@ class DefaultServiceRegisterer implements Service
         $di->set('Phly\Http\Request', function () use ($req) {
             return $req;
         });
-
+        $di->set('Psr\Http\Message\ResponseInterface', 'Phly\Http\Response');
+        $di->set('Phly\Http\Response', function() use ($wf) {
+           return $wf->newResponse(); 
+        });
+        
         // - All controllers implementing the ControllerInterface
         $mf = $di->get('Base\Interfaces\ServerSideMessageFactoryInterface');
         $di->set('Base\Controller')
                 ->withSetter('setView', ['view' => '@Base\View'])
-                ->withSetter('setResponse', ['response' => $wf->newResponse()])
+                ->withSetter('setResponse', ['response' => '@Psr\Http\Message\ResponseInterface'])
                 ->withSetter('setRequest', ['request' => '@Psr\Http\Message\RequestInterface']);
 
         // - Autoloader concretion that implements the AutoloaderInterface

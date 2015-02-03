@@ -107,8 +107,8 @@ class App implements AppInterface, MiddlewareCallable
             $response = $responseObject;
         }
         if ($sendResponse) {
-            $this->responseSender->setResponse($response);
-            $this->responseSender->send();
+            $this->getResponseSender()->setResponse($response);
+            $this->getResponseSender()->send();
         } else {
             return $response;
         }
@@ -230,4 +230,45 @@ class App implements AppInterface, MiddlewareCallable
         $this->middleware[] = $middleware;
         
     }
+    
+    /**
+     * Returns the response sender
+     * 
+     * @return \Base\ResponseSende
+     */
+    public function getResponseSender()
+    {
+        return $this->responseSender;
+    }
+    
+    /**
+     * Returns the dispatcher
+     * 
+     * @return \Base\Dispatcher
+     */
+    public function getDispatcher()
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * Returns the autoloader
+     * 
+     * @return \Base\Autoload
+     */
+    public function getAutoloader()
+    {
+        return $this->autoloader;
+    }
+
+    /**
+     * Returns the Request
+     * 
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
 }
