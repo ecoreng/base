@@ -40,7 +40,7 @@ class AppTest extends \PHPUnit_Framework_TestCase
     {
         $this->setTestRoute();
         $route = $this->app->getRoute('name', ['id' => 9]);
-        $this->assertEquals($route, 'test/9');
+        $this->assertEquals($route, '/test/9');
     }
 
     public function testAddMiddleware()
@@ -52,10 +52,7 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $mw = $this->getMockBuilder('Base\Middleware')
                 ->setMethods([
                     'call',
-                    'setApplication',
-                    'getApplication',
-                    'setInjector',
-                    'getInjector',
+                    'next',
                     'setNextMiddleware',
                     'getNextMiddleware'
                 ])
@@ -65,7 +62,7 @@ class AppTest extends \PHPUnit_Framework_TestCase
                 ->method('call');
 
         $this->app->add($mw);
-        $this->app->run();
+        $this->app->run(false);
 
         $mws = $rm->getValue($this->app);
         $appMw = reset($mws);
@@ -95,19 +92,10 @@ class AppTest extends \PHPUnit_Framework_TestCase
     public function testCallEmpty()
     {
         try {
-            $this->app->call();
+            $this->app->run(false);
         } catch (\Exception $e) {
             $this->assertInstanceOf('Phroute\Exception\HttpRouteNotFoundException', $e);
         }
-    }
-
-    public function testSubRequest()
-    {
-        $this->setTestRoute();
-        $res = $this->app->subRequest('/test/22', []);
-        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $res);
-        $this->assertEquals('test:22', (string) $res->getBody());
-        $this->assertEquals(200, $res->getStatusCode());
     }
 
     public function testDefaultConfig()

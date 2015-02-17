@@ -2,16 +2,11 @@
 
 namespace Base;
 
-use \Base\Middleware;
+use \Psr\Http\Message\RequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
 
 interface App
 {
-
-    public function getRequest();
-
-    public function getDispatcher();
-
-    public function getRouter();
 
     public function addRoute();
 
@@ -23,11 +18,9 @@ interface App
 
     public function setConfigArray(array $config);
 
-    public function run();
+    public function run($sendResponse);
 
-    public function call();
+    public function call(Request $request, Response $response);
 
-    public function add(Middleware $middleware);
-
-    public function getAutoloader();
+    public function add($middleware);
 }

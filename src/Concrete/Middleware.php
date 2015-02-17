@@ -2,37 +2,13 @@
 
 namespace Base\Concrete;
 
-use \Interop\Container\ContainerInterface as Container;
 use \Base\Middleware as IMiddleware;
-use \Base\App;
 use \Base\Interfaces\MiddlewareCallableInterface as MiddlewareCallable;
+use \Psr\Http\Message\RequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
 
 abstract class Middleware implements IMiddleware
 {
-
-    protected $app;
-    protected $di;
-    protected $next;
-
-    public function setApplication(App $app)
-    {
-        $this->app = $app;
-    }
-
-    public function getApplication()
-    {
-        return $this->app;
-    }
-
-    public function setInjector(Container $di)
-    {
-        $this->di = $di;
-    }
-
-    public function getInjector()
-    {
-        return $this->di;
-    }
 
     public function setNextMiddleware(MiddlewareCallable $mw = null)
     {
@@ -44,8 +20,8 @@ abstract class Middleware implements IMiddleware
         return $this->next;
     }
     
-    public function next(){
-        $this->getNextMiddleware()->call();
+    public function next(Request $request, Response $response){
+       return $this->getNextMiddleware()->call($request, $response);
     }
 
 }

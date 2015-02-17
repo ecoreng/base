@@ -45,7 +45,7 @@ class DefaultServiceRegisterer implements Service
 
         $di->set('Base\Request', 'Psr\Http\Message\RequestInterface');
         $di->set('Base\Response', 'Psr\Http\Message\ResponseInterface');
-        
+
         // - Session Handling
         $di->set('Aura\Session\Session', function () {
             $sessionFactory = new \Aura\Session\SessionFactory;
@@ -60,9 +60,9 @@ class DefaultServiceRegisterer implements Service
         });
         $di->set('Psr\Http\Message\ResponseInterface', 'Phly\Http\Response');
         $di->set('Phly\Http\Response', function() use ($wf) {
-           return $wf->newResponse(); 
+            return $wf->newResponse();
         });
-        
+
         // - All controllers implementing the ControllerInterface
         $mf = $di->get('Base\Interfaces\ServerSideMessageFactoryInterface');
         $di->set('Base\Controller')
@@ -78,10 +78,18 @@ class DefaultServiceRegisterer implements Service
             return $di;
         });
 
-        // - Framework default app
-        $di->set('Base\Concrete\App', null, [
-            'config' => $this->config,
-        ]);
+        $di->set('Base\Config', 'Base\Concrete\Config');
+        $defaultConfig = [
+            'environment.base-url' => '',
+            'app.mode' => 'dev',
+        ];
+        $di->set('Base\Concrete\Config')->withArgument('data', array_merge($defaultConfig, $this->config));
+        
+        // aliases, not actual request / response objects or interfaces
+        $di->set('Base\Request', 'Psr\Http\Message\RequestInterface');
+        $di->set('Base\Response', 'Psr\Http\Message\ResponseInterface');
+        
+        // default error handler
+        $di->set('Base\ErrorHandler', 'Base\Concrete\DefaultErrorHandler');
     }
-
 }

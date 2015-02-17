@@ -20,8 +20,6 @@ $app->setConfig('environment.base-url', '/Projects/base-repo/example/example2.ph
 // use a controller to handle route using a custom method in the overriden app (see CustomServiceRegisterer)
 $app->get('test', '\ExampleCo\Example\ExampleController:getIndex');
 
-$app->add(new \ExampleCo\Example\CustomMiddleware);
-
 // run app
 $app->run();
 

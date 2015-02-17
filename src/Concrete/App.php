@@ -7,7 +7,9 @@ use \Base\Dispatcher;
 use \Base\Autoloader;
 use \Base\Interfaces\ServerSideMessageFactoryInterface as MessageFactory;
 use \Base\ResponseSender;
+use \Base\Config;
 use \Base\App as AppInterface;
+use \Base\ErrorHandler;
 use \Psr\Http\Message\RequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Interop\Container\ContainerInterface as IContainer;
@@ -21,50 +23,28 @@ class App implements AppInterface, MiddlewareCallable
     protected $router;
     protected $dispatcher;
     protected $autoloader;
-    protected $config = [
-        'environment.base-url' => '',
-        'app.mode' => 'dev',
-    ];
+    protected $config;
     protected $messageFactory;
     protected $responseSender;
     protected $request;
     protected $di;
     protected $middleware = [];
+    protected $errorHandler;
 
     public function __construct(
-        Router $router,
-        Dispatcher $dispatcher,
-        Autoloader $autoloader,
-        $config = [],
-        MessageFactory $messageFactory,
-        ResponseSender $responseSender,
-        Request $request,
-        IContainer $di
+    Router $router, Dispatcher $dispatcher, Autoloader $autoloader, Config $config, MessageFactory $messageFactory,
+            ResponseSender $responseSender, Request $request, IContainer $di, ErrorHandler $errorHandler
     )
     {
         $this->router = $router;
         $this->dispatcher = $dispatcher;
         $this->autoloader = $autoloader;
-        $this->config = array_replace_recursive($this->config, $config);
+        $this->config = $config;
         $this->messageFactory = $messageFactory;
         $this->responseSender = $responseSender;
         $this->request = $request;
         $this->di = $di;
-
-    }
-
-    /**
-     * Router
-     */
-    
-    /**
-     * Get the router
-     * 
-     * @return \Base\Interfaces\RouterInterface
-     */
-    public function getRouter()
-    {
-        return $this->router;
+        $this->errorHandler = $errorHandler;
     }
 
     /**
@@ -93,85 +73,64 @@ class App implements AppInterface, MiddlewareCallable
     /**
      * Dispatcher
      */
-    protected function dispatch(Request $request = null, $sendResponse = true)
+    protected function dispatch(Request $request = null)
     {
         if ($request === null) {
             $request = $this->request;
         }
         $this->dispatcher->setBaseUrl($this->getConfig('environment.base-url'));
         $response = $this->dispatcher->dispatch($request);
-        // for anonymous functions returning text is easier
+
+        // for anonymous functions returning strings might be easier
         if (is_string($response)) {
             $responseObject = $this->messageFactory->newResponse();
             $responseObject->getBody()->write($response);
             $response = $responseObject;
         }
-        if ($sendResponse) {
-            $this->getResponseSender()->setResponse($response);
-            $this->getResponseSender()->send();
-        } else {
-            return $response;
-        }
+        return $response;
     }
 
     /**
-     * App
-     */
-    
-    /**
      * Run all registered middleware, and the app at the end
      */
-    public function run()
+    public function run($sendResponse = true)
     {
         $lastMiddleware = end($this->middleware);
         if ($lastMiddleware instanceof Middleware) {
             $lastMiddleware->setNextMiddleware($this);
         }
-        $this->middleware[] = $this;
+
         $firstMiddleware = reset($this->middleware);
-        $firstMiddleware->call();
+        $firstMiddleware = $firstMiddleware ? $firstMiddleware : $this;
+        try {
+            $request = $this->di->get('Psr\Http\Message\RequestInterface');
+            $response = $firstMiddleware->call(
+                    $request, $this->di->get('Psr\Http\Message\ResponseInterface')
+            );
+
+            $this->response = $response;
+            if ($sendResponse) {
+                $this->getResponseSender()->setResponse($response);
+                $this->getResponseSender()->send();
+            } else {
+                return $response;
+            }
+        } catch (\Exception $e) {
+            $this->errorHandler->handle($e, $request);
+        }
     }
 
-    
     /**
-     * Run the app @ the end
+     * Run the app @ the end of the queue
      */
-    public function call()
+    public function call(Request $request, Response $response)
     {
-        $response = $this->dispatch();
+        $this->request = $request;
+        $this->di->set('Psr\Http\Message\RequestInterface', $this->request);
+        $this->di->set('Psr\Http\Message\ResponseInterface', $response);
+        return $this->dispatch($request);
     }
 
-    
-    /**
-     * Run a sunrequest through the app but return the response
-     * without modifying the state of the app (experimental)
-     * 
-     * @param string $url
-     * @param array $subEnvironment
-     * @return \Psr\Http\Message\OutgoingResponseInterface
-     */
-    public function subRequest($url, array $subEnvironment = [])
-    {
-        $environment = [
-            'body' => $_POST,
-            'query' => $_GET,
-            'cookies' => $_COOKIE,
-            'files' => $_FILES,
-            'server' => array_merge($_SERVER, ['REQUEST_METHOD' => 'GET'])
-        ];
-        $environment = array_merge_recursive($environment, $subEnvironment, ['server' => ['REQUEST_URI' => $url]]);
-        $this->messageFactory->resetFactory($environment);
-        $request = $this->messageFactory->newRequest();
-        
-        $response = $this->dispatch($request, false);
-        $this->messageFactory->resetFactory();
-        return $response;
-    }
-
-    /**
-     * App Config
-     */
-    
     /**
      * Add / Set configuration
      * 
@@ -180,7 +139,7 @@ class App implements AppInterface, MiddlewareCallable
      */
     public function setConfig($key, $value)
     {
-        $this->config[$key] = $value;
+        $this->config->set($key, $value);
     }
 
     /**
@@ -191,10 +150,7 @@ class App implements AppInterface, MiddlewareCallable
      */
     public function getConfig($key = null)
     {
-        if (array_key_exists($key, $this->config)) {
-            return $this->config[$key];
-        }
-        return null;
+        return $this->config->get($key);
     }
 
     /**
@@ -204,43 +160,45 @@ class App implements AppInterface, MiddlewareCallable
      */
     public function setConfigArray(array $config)
     {
-        $this->config = array_replace_recursive($this->config, $config);
+        $this->config->setArray($config);
     }
 
-    /**
-     * Middleware 
-     */
-    
     /**
      * Register a middleware in the queue
      * 
-     * @param \Base\Interfaces\MiddlewareInterface $middleware
+     * @param \Base\Middleware|string $middleware
      */
-    public function add(Middleware $middleware)
+    public function add($middleware)
     {
-        $middleware->setApplication($this);
-        $middleware->setInjector($this->di);
-
-        
+        $mw = is_string($middleware) ? $this->di->get($middleware) : $middleware;
         if (count($this->middleware) > 0) {
             $fmw = reset($this->middleware);
-            $fmw->setNextMiddleware($middleware);
+            $fmw->setNextMiddleware($mw);
         }
-        
-        $this->middleware[] = $middleware;
-        
+
+        $this->middleware[] = $mw;
     }
-    
+
+    /**
+     * Returns the router
+     * 
+     * @return \Base\Router
+     */
+    public function getRouter()
+    {
+        return $this->router;
+    }
+
     /**
      * Returns the response sender
      * 
-     * @return \Base\ResponseSende
+     * @return \Base\ResponseSender
      */
     public function getResponseSender()
     {
         return $this->responseSender;
     }
-    
+
     /**
      * Returns the dispatcher
      * 
