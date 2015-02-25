@@ -6,6 +6,7 @@ use \Base\Autoloader;
 use \Composer\Autoload\ClassLoader as ClassLoader;
 use \Base\ServiceRegisterer as Service;
 use \Interop\Container\ContainerInterface;
+use \Monolog\Logger;
 
 class DefaultServiceRegisterer implements Service
 {
@@ -78,6 +79,7 @@ class DefaultServiceRegisterer implements Service
             return $di;
         });
 
+        // - Config object with defaults
         $di->set('Base\Config', 'Base\Concrete\Config');
         $defaultConfig = [
             'environment.base-url' => '',
@@ -91,5 +93,24 @@ class DefaultServiceRegisterer implements Service
         
         // default error handler
         $di->set('Base\ErrorHandler', 'Base\Concrete\DefaultErrorHandler');
+
+        // event emitter
+        $di->set('Base\EventEmitter', 'Base\Concrete\LeagueEventAdapter');
+
+        // Set the default logger to catch warnings and higher level and write them to a file
+        // additional handlers can be pushed by requesting the logger and calling pushHandler
+        $di->set('Psr\Log\LoggerInterface', function () use ($di) {
+            $logger = new Logger('Base');
+            $logger->pushHandler(
+                $di->setArgs(
+                    [
+                        'stream' => 'base.log',
+                        'level' => Logger::WARNING
+                    ]
+                )
+                ->get('Monolog\Handler\StreamHandler')
+            );
+            return $logger;
+        });
     }
 }
