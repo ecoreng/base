@@ -1,15 +1,23 @@
-Base is a microframework (more like a mini framework) inspired in Slim that features, Aura components, Fast Routing (nikita popov's algorithm), PHP FIG PSR7 (mostly) compatible, Dependency Injection for controllers AND methods (Controller methods, Closures, etc), Full controller registration in router, Middleware support ...
+#Base#
+Base is a microframework (more like a mini framework) inspired in Slim that features, Dependency Injection for classes and Closures / anonymous functions, PSR-7 compatible Request / Response, Aura Session, Middleware support, Fast Routing (nikita popov's algorithm), Full controller registration in router, Events, PSR-3 Logger.
 
-This frameworks uses
-====================
-- phly/http (Request / Response)
-- aura/session (Session)
-- psr/http-message (PHP-FIG PSR-7)
-- phroute/phroute (Router)
-- interop/container
+##What differentiates ``Base`` from other micro frameworks?##
+- Effortless Full Dependency Injection (Auto dependency resolution)
+- Swappable Dependency Injection Container (interp/container compatible)
+- Closure dependency Resolution / Injection
+- PSR-7 Request / Response (Slim 3.0 will support it too)
+- Fast Router
+
+##This frameworks uses##
+- phly/http (PSR-7 Request / Response)
+- aura/session (Session data management)
+- phroute/phroute (Wrapper Router around Nikita Popov's fast route)
+- interop/container (Through our own base\di package)
+- monolog/monolog (PSR-3 Logger)
+- league/event
 
 
-Usage:
+Usage example:
 
 Use as micro with Dependency Injection
 ``example\example3.php``
@@ -23,6 +31,13 @@ Override service definitions, load a controller method
 Load a full controller class
 ``example\example4.php``
 
+Middleware Support:
+``example\exampleMw.php``
 
+Event Emitting:
+``example\example-event.php``
+
+Logging
+``example\example-logger.php``
 
 
