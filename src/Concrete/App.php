@@ -172,7 +172,7 @@ class App implements AppInterface, MiddlewareCallable
     {
         $mw = is_string($middleware) ? $this->di->get($middleware) : $middleware;
         if (count($this->middleware) > 0) {
-            $fmw = reset($this->middleware);
+            $fmw = end($this->middleware);
             $fmw->setNextMiddleware($mw);
         }
 

@@ -61,7 +61,40 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $mw->expects($this->once())
             ->method('call');
 
+        $mw2 = $this->getMockBuilder('Base\Middleware')
+            ->setMethods([
+                'call',
+                'next',
+                'setNextMiddleware',
+                'getNextMiddleware'
+            ])
+            ->getMock();
+
+        $mw->expects($this->once())
+            ->method('setNextMiddleware')
+            ->with($mw2);
+
+        $mw3 = $this->getMockBuilder('Base\Middleware')
+            ->setMethods([
+                'call',
+                'next',
+                'setNextMiddleware',
+                'getNextMiddleware'
+            ])
+            ->getMock();
+
+        $mw2->expects($this->once())
+            ->method('setNextMiddleware')
+            ->with($mw3);
+
+        $mw3->expects($this->once())
+            ->method('setNextMiddleware')
+            ->with($this->app);
+
+
         $this->app->add($mw);
+        $this->app->add($mw2);
+        $this->app->add($mw3);
         $this->app->run(false);
 
         $mws = $rm->getValue($this->app);
@@ -81,9 +114,9 @@ class AppTest extends \PHPUnit_Framework_TestCase
                 'REQUEST_METHOD' => 'GET'
             ]
             ]))->newRequest();
-        
+
         $res = $rm->invokeArgs($this->app, [$req]);
-        
+
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $res);
         $this->assertEquals('test:22', (string) $res->getBody());
         $this->assertEquals(200, $res->getStatusCode());

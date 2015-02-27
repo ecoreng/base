@@ -9,6 +9,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 abstract class Middleware implements IMiddleware
 {
+    protected $next;
 
     public function setNextMiddleware(MiddlewareCallable $mw = null)
     {
@@ -19,9 +20,9 @@ abstract class Middleware implements IMiddleware
     {
         return $this->next;
     }
-    
-    public function next(Request $request, Response $response){
-       return $this->getNextMiddleware()->call($request, $response);
-    }
 
+    public function next(Request $request, Response $response)
+    {
+        return $this->getNextMiddleware()->call($request, $response);
+    }
 }
