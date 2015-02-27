@@ -16,6 +16,9 @@ class PhrouteRouterAdapter extends Collector implements Router
 
     public function getRoute($name, $params = [])
     {
+        if (substr($name, 0, 1) === '/') {
+            return $name;
+        }
         $route = parent::route($name, $params);
         $pre = '/';
         if (substr($route, 0, 1) === '/') {
@@ -28,5 +31,4 @@ class PhrouteRouterAdapter extends Collector implements Router
     {
         return call_user_func_array('parent::' . $name, $args);
     }
-
 }

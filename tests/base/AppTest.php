@@ -8,7 +8,6 @@ use \Base\Concrete\App;
 
 class AppTest extends \PHPUnit_Framework_TestCase
 {
-
     protected $app;
 
     public function setUp()
@@ -16,6 +15,7 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $autoloader = $this->getMock('\Composer\Autoload\ClassLoader');
         $c = new BContainer;
         $c->register(new Services($autoloader));
+        $c->set('Base\ErrorHandler', 'Base\Test\BypassErrorHandler');
         $this->app = $c->get('Base\App');
     }
 
@@ -50,16 +50,16 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $rm->setAccessible(true);
 
         $mw = $this->getMockBuilder('Base\Middleware')
-                ->setMethods([
-                    'call',
-                    'next',
-                    'setNextMiddleware',
-                    'getNextMiddleware'
-                ])
-                ->getMock();
+            ->setMethods([
+                'call',
+                'next',
+                'setNextMiddleware',
+                'getNextMiddleware'
+            ])
+            ->getMock();
 
         $mw->expects($this->once())
-                ->method('call');
+            ->method('call');
 
         $this->app->add($mw);
         $this->app->run(false);
@@ -72,18 +72,18 @@ class AppTest extends \PHPUnit_Framework_TestCase
     public function testCall()
     {
         $this->setTestRoute();
-
-        $r = new \ReflectionObject($this->app);
-        $rm = $r->getMethod('dispatch');
+        $rm = new \ReflectionMethod($this->app, 'dispatch');
         $rm->setAccessible(true);
-        $req = (new \Base\Concrete\PhlyMessageFactory(null, [
+        $req = (new \Base\Concrete\PhlyMessageFactory(null,
+            [
             'server' => [
                 'REQUEST_URI' => '/test/22',
                 'REQUEST_METHOD' => 'GET'
             ]
-                ]))->newRequest();
-
-        $res = $rm->invoke($this->app, $req, false);
+            ]))->newRequest();
+        
+        $res = $rm->invokeArgs($this->app, [$req]);
+        
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $res);
         $this->assertEquals('test:22', (string) $res->getBody());
         $this->assertEquals(200, $res->getStatusCode());
@@ -126,5 +126,4 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->app->getConfig('test'), $config['test']);
         $this->assertEquals($this->app->getConfig('environment.base-url'), $config['environment.base-url']);
     }
-
 }
