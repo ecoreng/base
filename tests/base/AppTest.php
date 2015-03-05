@@ -15,7 +15,7 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $autoloader = $this->getMock('\Composer\Autoload\ClassLoader');
         $c = new BContainer;
         $c->register(new Services($autoloader));
-        $c->set('Base\ErrorHandler', 'Base\Test\BypassErrorHandler');
+        $c->set('Base\ErrorHandler', 'Base\Concrete\BypassErrorHandler');
         $this->app = $c->get('Base\App');
     }
 

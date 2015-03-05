@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Test;
+namespace Base\Concrete;
 
 use \Psr\Http\Message\RequestInterface as Request;
 
