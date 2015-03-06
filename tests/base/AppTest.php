@@ -107,13 +107,17 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $this->setTestRoute();
         $rm = new \ReflectionMethod($this->app, 'dispatch');
         $rm->setAccessible(true);
-        $req = (new \Base\Concrete\PhlyMessageFactory(null,
-            [
-            'server' => [
-                'REQUEST_URI' => '/test/22',
-                'REQUEST_METHOD' => 'GET'
-            ]
-            ]))->newRequest();
+        $req = (
+            new \Base\Concrete\PhlyMessageFactory(
+                null,
+                [
+                    'server' => [
+                        'REQUEST_URI' => '/test/22',
+                        'REQUEST_METHOD' => 'GET'
+                    ]
+               ]
+            )
+        )->newRequest();
 
         $res = $rm->invokeArgs($this->app, [$req]);
 
@@ -141,6 +145,15 @@ class AppTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($config[1], 'dev');
     }
 
+    public function testSubRequest()
+    {
+        $this->setTestRoute();
+        $res = $this->app->subRequest('/test/22');
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $res);
+        $this->assertEquals('test:22', (string) $res->getBody());
+        $this->assertEquals(200, $res->getStatusCode());
+    }
+    
     public function testSetGetConfig()
     {
         $this->app->setConfig('foo', 'bar');

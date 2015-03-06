@@ -22,14 +22,14 @@ class PhlyMessageFactory implements Factory
             return call_user_func([$this->reqFactory, 'fromGlobals']);
         }
         return call_user_func_array(
-                $this->reqFactory . '::fromGlobals',
-                [
-                    'server' => isset($this->env['server']) ? $this->env['server'] : null,
-                    'query' => isset($this->env['query']) ? $this->env['query'] : null,
-                    'body' => isset($this->env['body']) ? $this->env['body'] : null,
-                    'cookies' => isset($this->env['cookies']) ? $this->env['cookies'] : null,
-                    'files' => isset($this->env['files']) ? $this->env['files'] : null,
-                ]
+            $this->reqFactory . '::fromGlobals',
+            [
+                'server' => isset($this->env['server']) ? $this->env['server'] : null,
+                'query' => isset($this->env['query']) ? $this->env['query'] : null,
+                'body' => isset($this->env['body']) ? $this->env['body'] : null,
+                'cookies' => isset($this->env['cookies']) ? $this->env['cookies'] : null,
+                'files' => isset($this->env['files']) ? $this->env['files'] : null,
+            ]
         );
     }
 

@@ -32,8 +32,15 @@ class App implements AppInterface, MiddlewareCallable
     protected $errorHandler;
 
     public function __construct(
-    Router $router, Dispatcher $dispatcher, Autoloader $autoloader, Config $config, MessageFactory $messageFactory,
-            ResponseSender $responseSender, Request $request, IContainer $di, ErrorHandler $errorHandler
+        Router $router,
+        Dispatcher $dispatcher,
+        Autoloader $autoloader,
+        Config $config,
+        MessageFactory $messageFactory,
+        ResponseSender $responseSender,
+        Request $request,
+        IContainer $di,
+        ErrorHandler $errorHandler
     )
     {
         $this->router = $router;
@@ -103,9 +110,10 @@ class App implements AppInterface, MiddlewareCallable
         $firstMiddleware = reset($this->middleware);
         $firstMiddleware = $firstMiddleware ? $firstMiddleware : $this;
         try {
-            $request = $this->di->get('Psr\Http\Message\RequestInterface');
+            $request = $this->getRequest();
             $response = $firstMiddleware->call(
-                    $request, $this->di->get('Psr\Http\Message\ResponseInterface')
+                $request,
+                $this->di->get('Psr\Http\Message\ResponseInterface')
             );
 
             $this->response = $response;
@@ -121,12 +129,36 @@ class App implements AppInterface, MiddlewareCallable
     }
 
     /**
+     * Experimental sub-request function
+     * 
+     * @param string $url
+     * @param array $subEnvironment
+     * @return Response
+     */
+    public function subRequest($url, array $subEnvironment = [])
+    {
+        $environment = [
+            'query' => $_GET,
+            'body' => $_POST,
+            'cookies' => $_COOKIE,
+            'files' => $_FILES,
+            'server' => array_merge($_SERVER, ['REQUEST_METHOD' => 'GET'])
+        ];
+        $environment = array_merge_recursive($environment, $subEnvironment, ['server' => ['REQUEST_URI' => $url]]);
+        $this->messageFactory->resetFactory($environment);
+        $this->request = $this->messageFactory->newRequest();
+        $response = $this->run(false);
+        $this->messageFactory->resetFactory();
+        return $response;
+    }
+    
+    /**
      * Run the app @ the end of the queue
      */
     public function call(Request $request, Response $response)
     {
         $this->request = $request;
-        $this->di->set('Psr\Http\Message\RequestInterface', $this->request);
+        $this->di->set('Psr\Http\Message\RequestInterface', $this->getRequest());
         $this->di->set('Psr\Http\Message\ResponseInterface', $response);
         return $this->dispatch($request);
     }
