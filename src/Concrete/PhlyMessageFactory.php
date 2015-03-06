@@ -21,6 +21,7 @@ class PhlyMessageFactory implements Factory
         if (count($this->env) === 0) {
             return call_user_func([$this->reqFactory, 'fromGlobals']);
         }
+
         return call_user_func_array(
             $this->reqFactory . '::fromGlobals',
             [

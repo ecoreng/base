@@ -44,10 +44,9 @@ class PhrouteDispatcherAdapter implements Dispatcher
         $this->initDispatcher();
         
         $url = $request->getUri()->getPath();
-        
         if ($this->baseUrl !== '') {
             if (stripos($url, $this->baseUrl) === 0) {
-                $url = str_replace($this->baseUrl, '', $url);
+                $url = substr($url, strlen($this->baseUrl) - 1);
             }
         }
         ob_start();

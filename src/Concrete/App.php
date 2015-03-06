@@ -144,9 +144,10 @@ class App implements AppInterface, MiddlewareCallable
             'files' => $_FILES,
             'server' => array_merge($_SERVER, ['REQUEST_METHOD' => 'GET'])
         ];
-        $environment = array_merge_recursive($environment, $subEnvironment, ['server' => ['REQUEST_URI' => $url]]);
+        $environment = array_replace_recursive($environment, $subEnvironment, ['server' => ['REQUEST_URI' => $url]]);
         $this->messageFactory->resetFactory($environment);
         $this->request = $this->messageFactory->newRequest();
+        
         $response = $this->run(false);
         $this->messageFactory->resetFactory();
         return $response;
