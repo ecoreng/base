@@ -87,7 +87,6 @@ class App implements AppInterface, MiddlewareCallable
         }
         $this->dispatcher->setBaseUrl($this->getConfig('environment.base-url'));
         $response = $this->dispatcher->dispatch($request);
-
         // for anonymous functions returning strings might be easier
         if (is_string($response)) {
             $responseObject = $this->messageFactory->newResponse();
@@ -100,23 +99,25 @@ class App implements AppInterface, MiddlewareCallable
     /**
      * Run all registered middleware, and the app at the end
      */
-    public function run($sendResponse = true)
+    public function run($sendResponse = true, $bypassErrorHandler = false)
     {
         $lastMiddleware = end($this->middleware);
         if ($lastMiddleware instanceof Middleware) {
-            $lastMiddleware->setNextMiddleware($this);
+            if (!$lastMiddleware->getNextMiddleware()) {
+                $lastMiddleware->setNextMiddleware($this);
+            }
         }
 
         $firstMiddleware = reset($this->middleware);
         $firstMiddleware = $firstMiddleware ? $firstMiddleware : $this;
         try {
             $request = $this->getRequest();
+
             $response = $firstMiddleware->call(
                 $request,
                 $this->di->get('Psr\Http\Message\ResponseInterface')
             );
 
-            $this->response = $response;
             if ($sendResponse) {
                 $this->getResponseSender()->setResponse($response);
                 $this->getResponseSender()->send();
@@ -124,7 +125,11 @@ class App implements AppInterface, MiddlewareCallable
                 return $response;
             }
         } catch (\Exception $e) {
-            $this->errorHandler->handle($e, $request);
+            if ($bypassErrorHandler === false) {
+                $this->errorHandler->handle($e, $request);
+            } else {
+                throw $e;
+            }
         }
     }
 
@@ -135,7 +140,7 @@ class App implements AppInterface, MiddlewareCallable
      * @param array $subEnvironment
      * @return Response
      */
-    public function subRequest($url, array $subEnvironment = [])
+    public function subRequest($url, array $subEnvironment = [], $bypassErrorHandler = false)
     {
         $environment = [
             'query' => $_GET,
@@ -147,12 +152,11 @@ class App implements AppInterface, MiddlewareCallable
         $environment = array_replace_recursive($environment, $subEnvironment, ['server' => ['REQUEST_URI' => $url]]);
         $this->messageFactory->resetFactory($environment);
         $this->request = $this->messageFactory->newRequest();
-        
-        $response = $this->run(false);
+        $response = $this->run(false, $bypassErrorHandler);
         $this->messageFactory->resetFactory();
         return $response;
     }
-    
+
     /**
      * Run the app @ the end of the queue
      */

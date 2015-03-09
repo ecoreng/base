@@ -9,7 +9,7 @@ class PhrouteResolver implements Resolver
 {
 
     protected $di;
-
+    protected $count = 0;
     public function __construct(IContainer $di)
     {
         $this->di = $di;
@@ -23,6 +23,7 @@ class PhrouteResolver implements Resolver
      */
     public function resolve($handler)
     {
+        
         $key = is_object($handler) ? spl_object_hash($handler) : $handler;
 
         // Create callable array from string
@@ -31,7 +32,6 @@ class PhrouteResolver implements Resolver
                 $handler = explode(':', $handler);
             }
         }
-
 
         // Instantiate class from first element
         if (is_array($handler) && is_string(reset($handler))) {

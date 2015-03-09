@@ -13,6 +13,7 @@ trait ControllerTrait
     protected $view;
     protected $responseObject;
     protected $requestObject;
+    protected $count = 0;
     public function setView(View $view)
     {
         $this->view = $view;
