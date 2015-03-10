@@ -96,7 +96,7 @@ class DefaultServiceRegisterer implements Service
         $di->set('Base\ErrorHandler', 'Base\Concrete\DefaultErrorHandler');
 
         // event emitter
-        $di->set('Base\EventEmitter', 'Base\Concrete\LeagueEventAdapter');
+        $di->set('Base\EventEmitter', 'Base\Concrete\SabreEventAdapter');
 
         // Set the default logger to catch warnings and higher level and write them to a file
         // additional handlers can be pushed by requesting the logger and calling pushHandler

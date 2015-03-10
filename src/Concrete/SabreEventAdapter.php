@@ -2,9 +2,9 @@
 
 namespace Base\Concrete;
 
-use League\Event\Emitter;
+use Sabre\Event\Emitter;
 
-class LeagueEventAdapter implements \Base\EventEmitter
+class SabreEventAdapter implements \Base\EventEmitter
 {
     protected $emitter;
 
@@ -24,12 +24,11 @@ class LeagueEventAdapter implements \Base\EventEmitter
 
     public function addListener($event, $listener, $priority = 0)
     {
-        return $this->emitter->addListener($event, $listener, $priority);
+        return $this->emitter->on($event, $listener, $priority);
     }
 
-    public function emit($event)
+    public function emit($event, array $args)
     {
-        $args = func_get_args();
         return call_user_func_array([$this->emitter, 'emit'], $args);
     }
 }
