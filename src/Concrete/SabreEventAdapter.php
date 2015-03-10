@@ -2,7 +2,7 @@
 
 namespace Base\Concrete;
 
-use Sabre\Event\Emitter;
+use \Sabre\Event\EventEmitter as Emitter;
 
 class SabreEventAdapter implements \Base\EventEmitter
 {
@@ -27,7 +27,7 @@ class SabreEventAdapter implements \Base\EventEmitter
         return $this->emitter->on($event, $listener, $priority);
     }
 
-    public function emit($event, array $args)
+    public function emit($event, array $args = [])
     {
         return call_user_func_array([$this->emitter, 'emit'], $args);
     }

@@ -93,7 +93,7 @@ class DefaultServiceRegisterer implements Service
         $di->set('Base\Response', 'Psr\Http\Message\ResponseInterface');
         
         // default error handler
-        $di->set('Base\ErrorHandler', 'Base\Concrete\DefaultErrorHandler');
+        $di->set('Base\ErrorHandler', 'Base\Concrete\BypassErrorHandler');
 
         // event emitter
         $di->set('Base\EventEmitter', 'Base\Concrete\SabreEventAdapter');
