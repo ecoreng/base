@@ -29,7 +29,7 @@ class SabreEventAdapter implements \Base\EventEmitter
 
     public function emit($event, array $args = [])
     {
-        array_unshift($args, $event);
+        $args = [$event, $args];
         return call_user_func_array([$this->emitter, 'emit'], $args);
     }
 }
