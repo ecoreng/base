@@ -7,7 +7,7 @@ use \Psr\Http\Message\RequestInterface as Request;
 class DefaultErrorHandler implements \Base\ErrorHandler
 {
 
-    public function handle(\Exception $e, Request $request = null, \Base\App $app)
+    public function handle(\Exception $e, Request $request = null)
     {
         try {
             throw $e;

@@ -126,7 +126,7 @@ class App implements AppInterface, MiddlewareCallable
             }
         } catch (\Exception $e) {
             if ($bypassErrorHandler === false) {
-                $this->errorHandler->handle($e, $request, $this);
+                $this->errorHandler->handle($e, $request);
             } else {
                 throw $e;
             }
