@@ -7,7 +7,7 @@ use \Psr\Http\Message\RequestInterface as Request;
 class BypassErrorHandler implements \Base\ErrorHandler
 {
 
-    public function handle(\Exception $e, Request $request = null)
+    public function handle(\Exception $e, Request $request = null, \Base\App $app)
     {
             throw $e;
     }
